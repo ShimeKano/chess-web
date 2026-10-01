@@ -1,0 +1,1 @@
+export function expected(a,b){return 1/(1+10**((b-a)/400))}export function updateElo(rA,rB,result,k=32){return Math.round(rA+k*(result-expected(rA,rB)))}export function resultFor(color,result){if(result==='1/2-1/2')return .5;return result===color?'win':'loss'}
