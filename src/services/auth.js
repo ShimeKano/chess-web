@@ -1,0 +1,4 @@
+import{createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut}from'firebase/auth';import{auth}from'../firebase';import{ensurePlayer}from'./firestore';
+export async function register(email,password,name){if(!auth)throw Error('Firebase chưa được cấu hình.');const c=await createUserWithEmailAndPassword(auth,email,password);await ensurePlayer(c.user,name);return c.user}
+export async function login(email,password){if(!auth)throw Error('Firebase chưa được cấu hình.');return(await signInWithEmailAndPassword(auth,email,password)).user}
+export function logout(){return auth?signOut(auth):Promise.resolve()}
