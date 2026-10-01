@@ -1,0 +1,5 @@
+import{collection,doc,getDoc,getDocs,limit,orderBy,query,setDoc,serverTimestamp,updateDoc}from'firebase/firestore';import{db}from'../firebase';
+export async function ensurePlayer(user,name){if(!db)return;const ref=doc(db,'players',user.uid);const snap=await getDoc(ref);if(!snap.exists())await setDoc(ref,{uid:user.uid,name:name||user.email?.split('@')[0]||'Player',elo:1200,wins:0,losses:0,draws:0,games:0,createdAt:serverTimestamp()});}
+export async function getLeaderboard(){if(!db)return[];const q=query(collection(db,'players'),orderBy('elo','desc'),limit(50));const s=await getDocs(q);return s.docs.map(d=>({id:d.id,...d.data()}));}
+export async function saveGame(game){if(!db)return;await setDoc(doc(collection(db,'games')), {...game,createdAt:serverTimestamp()});}
+export async function updatePlayer(uid,data){if(!db)return;await updateDoc(doc(db,'players',uid),data);}
