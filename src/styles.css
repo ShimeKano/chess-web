@@ -1,1 +1,31 @@
 *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:#0b1020;color:#e5e7eb}button,input{font:inherit}button{cursor:pointer}main{max-width:1180px;margin:auto;padding:24px}header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #263047;padding-bottom:18px;margin-bottom:28px}h1{margin:0;font-size:30px}header p{margin:4px 0;color:#94a3b8}.hero{display:grid;grid-template-columns:380px 1fr;gap:60px;align-items:center;min-height:65vh}.auth{background:#111827;border:1px solid #263047;border-radius:18px;padding:28px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 60px #0005}.auth h2{margin:0 0 8px}.auth input{padding:12px 14px;border-radius:10px;border:1px solid #374151;background:#0f172a;color:#fff}.primary,.gameTop button,.controls button,header button{border:0;background:#2563eb;color:#fff;border-radius:10px;padding:11px 15px}.link{border:0;background:none;color:#60a5fa}.error{color:#f87171;font-size:13px}.info h2{font-size:42px;margin:0 0 12px}.info p{color:#94a3b8;font-size:18px}.info li{list-style:none;margin:14px 0;font-size:18px}.notice{background:#3b2f0b;border:1px solid #7c5c10;padding:12px;border-radius:10px;margin-bottom:20px}.gameLayout{display:grid;grid-template-columns:minmax(300px,680px) 300px;gap:28px}.gameTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.board{width:min(78vw,680px);aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);border:5px solid #1f2937;border-radius:8px;overflow:hidden;box-shadow:0 20px 50px #0008}.square{border:0;display:flex;align-items:center;justify-content:center;padding:0}.light{background:#f0d9b5}.dark{background:#b58863}.square:hover{filter:brightness(1.08)}.whitePiece,.blackPiece{font-size:clamp(28px,7vw,64px);line-height:1;text-shadow:0 2px 3px #0008}.whitePiece{color:#fff}.blackPiece{color:#111}.controls{display:flex;gap:12px;align-items:center;margin-top:14px;color:#94a3b8}aside{background:#111827;border:1px solid #263047;border-radius:16px;padding:20px;height:max-content}.rank{display:grid;grid-template-columns:35px 1fr 55px;gap:8px;padding:10px 0;border-bottom:1px solid #263047}.rank strong{text-align:right}small{color:#94a3b8}@media(max-width:800px){main{padding:14px}.hero,.gameLayout{grid-template-columns:1fr}.info{display:none}.gameLayout{gap:18px}.board{width:min(94vw,680px)}aside{order:2}}
+/* Static Stockfish + Hugging Face board/editor additions */
+.gamePanel{min-width:0}.topButtons,.buttonRow,.settingsRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.topButtons button,.settingsRow button,.editor button,.controls button{border:1px solid #374151;background:#172033;color:#e5e7eb;border-radius:9px;padding:9px 12px}
+.topButtons button:disabled,.controls button:disabled{opacity:.5;cursor:wait}
+.settingsRow{justify-content:space-between;margin:12px 0 14px;color:#cbd5e1;font-size:14px}
+.settingsRow label{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.settingsRow input[type=range]{width:130px;accent-color:#60a5fa}
+.settingsRow select,.editor select,.editor textarea{border:1px solid #374151;background:#0f172a;color:#e5e7eb;border-radius:8px;padding:8px}
+.boardWrap{display:flex;gap:5px;width:min(78vw,680px);align-items:stretch}
+.rankLabels{display:grid;grid-template-rows:repeat(8,1fr);font-size:12px;color:#94a3b8;text-align:center;align-items:center}
+.boardColumn{min-width:0;flex:1}
+.board{width:100%;min-width:0}
+.square{position:relative;min-width:0;aspect-ratio:1;overflow:hidden}
+.square.selected{background:#7fc97f!important}
+.square.editorSelected{box-shadow:inset 0 0 0 4px #fbbf24!important}
+.square.lastMove{box-shadow:inset 0 0 0 3px #d5d86b}
+.piece{width:88%;height:88%;object-fit:contain;pointer-events:none;z-index:1}
+.moveDot{width:24%;height:24%;border-radius:50%;background:#0004;position:absolute}
+.captureRing{position:absolute;inset:4%;border:4px solid #0004;border-radius:50%;pointer-events:none}
+.fileLabels{display:grid;grid-template-columns:repeat(8,1fr);font-size:12px;color:#94a3b8;text-align:center;padding-top:4px}
+.controls{flex-wrap:wrap;align-items:flex-start}
+.controls span{overflow-wrap:anywhere}
+.editor{margin-top:18px;border-top:1px solid #263047;padding-top:14px}
+.editorToggle{width:100%}
+.editorTools{display:flex;flex-direction:column;gap:12px;padding:14px 0}
+.editorTools p{margin:0;color:#cbd5e1}
+.editorTools label{display:flex;flex-direction:column;gap:6px;color:#cbd5e1}
+.editorTools textarea{width:100%;resize:vertical;font-family:ui-monospace,monospace}
+.editor .primary{background:#2563eb}
+@media(max-width:800px){.boardWrap{width:94vw;max-width:680px}.settingsRow{align-items:flex-start;flex-direction:column}.settingsRow label{width:100%}.settingsRow input[type=range]{flex:1}.topButtons{flex-wrap:wrap}.gameTop{align-items:flex-start;gap:8px;flex-direction:column}}
