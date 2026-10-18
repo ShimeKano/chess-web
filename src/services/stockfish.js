@@ -1,5 +1,3 @@
-import stockfishUrl from 'stockfish/bin/stockfish-19-lite-single.js?url';
-
 let worker = null;
 let readyPromise = null;
 let ready = false;
@@ -12,7 +10,7 @@ function boot() {
   readyPromise = new Promise((resolve, reject) => {
     try {
       // Vite copies the engine worker into the static build; no runtime CDN/backend.
-      worker = new Worker(stockfishUrl);
+      worker = new Worker(new URL(import.meta.env.BASE_URL + 'stockfish/stockfish-19-lite-single.js', window.location.href));
       worker.onmessage = (event) => {
         const line = String(event.data ?? '').trim();
         if (line === 'uciok') {
