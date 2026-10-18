@@ -5,7 +5,7 @@ let readyPromise = null;
 let ready = false;
 let activeResolve = null;
 let activeReject = null;
-let timeoutId = null;
+let timeoutId = null;\nlet handshakeTimeout = null;
 
 function boot() {
   if (readyPromise) return readyPromise;
