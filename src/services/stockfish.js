@@ -27,7 +27,7 @@ function boot() {
           return;
         }
         if (line.startsWith('bestmove ')) {
-          const move = line.split(/\\s+/)[1] || '(none)';
+          const move = line.split(/\s+/)[1] || '(none)';
           if (searchTimeout) clearTimeout(searchTimeout);
           searchTimeout = null;
           const done = activeResolve;
