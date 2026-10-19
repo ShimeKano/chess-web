@@ -97,7 +97,49 @@ function App(){
   async function runEngine(g,level=skill){if(g.isGameOver())return g;setThinking(true);setError('');setStatus('Stockfish đang suy nghĩ…');try{const uci=await bestMove(g.fen(),level,1000);if(!uci||uci==='(none)')throw new Error('Engine không trả về nước đi.');const next=new Chess(g.fen());const move=next.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||'q'});if(!move)throw new Error('Stockfish trả về nước đi không hợp lệ: '+uci);pushPosition(next);return next;}catch(e){setError('Stockfish chưa sẵn sàng: '+e.message);setStatus('Không thể lấy nước đi từ Stockfish.');return g;}finally{setThinking(false);}}
   async function newGame(){const g=new Chess();setGame(g);setHistory([g.fen()]);setSelected(null);setTargets([]);setEditorMode(false);setEditorSquare(null);setBest('');setError('');setFenText(g.fen());setFlipped(humanColor==='b');setStatus('Ván mới');if(humanColor==='b'){const after=await runEngine(g,skill);setHistory([after.fen()]);}else setStatus('Lượt Trắng — bạn đi trước.');}
   async function startFromFen(){try{const g=new Chess(fenText.trim());setGame(g);setHistory([g.fen()]);setSelected(null);setTargets([]);setEditorMode(false);setEditorSquare(null);setFlipped(humanColor==='b');setError('');setEditorStatus('Đã bắt đầu từ vị trí FEN.');setStatus(resultStatus(g));if(g.turn()!==humanColor&&!g.isGameOver()){const after=await runEngine(g,skill);setHistory([after.fen()]);}}catch(e){setEditorStatus('FEN không hợp lệ: '+e.message);}}
-  async function onSquare(sq){if(thinking)return;setError('');if(editorMode){setEditorSquare(sq);return;}if(game.isGameOver()){setStatus(resultStatus(game));return;}if(game.turn()!==humanColor)return;
+  async function onSquare(sq){if(thinking)return;setError('');if(editorMode){
+      if(!editorSquare){
+        setEditorSquare(sq);
+        setEditorStatus(editorPieces[sq]
+          ? 'Đã chọn quân ở ô '+sq+'. Bấm ô đích để di chuyển quân.'
+          : 'Đã chọn ô '+sq+'. Hãy chọn một ô đang có quân để di chuyển.');
+        return;
+      }
+      if(editorSquare===sq){
+        setEditorSquare(null);
+        setEditorStatus('Đã bỏ chọn quân.');
+        return;
+      }
+      const movingPiece = editorPieces[editorSquare];
+      if(!movingPiece){
+        setEditorSquare(editorPieces[sq] ? sq : null);
+        setEditorStatus(editorPieces[sq]
+          ? 'Đã chọn quân ở ô '+sq+'. Bấm ô đích để di chuyển quân.'
+          : 'Ô '+sq+' đang trống. Hãy chọn một ô đang có quân.');
+        return;
+      }
+      const next = {...editorPieces};
+      delete next[editorSquare];
+      if(editorPieces[sq]) {
+        setEditorStatus('Đã di chuyển quân tới '+sq+' và thay quân ở ô đích.');
+      } else {
+        setEditorStatus('Đã di chuyển quân từ '+editorSquare+' tới '+sq+'.');
+      }
+      next[sq] = movingPiece;
+      const fen = fenWithPlacement(piecesToPlacement(next), fenText || game.fen());
+      setEditorPieces(next);
+      setFenText(fen);
+      setEditorSquare(null);
+      try {
+        const g = new Chess(fen);
+        setGame(g);
+        setHistory([g.fen()]);
+        setStatus(resultStatus(g));
+      } catch {
+        setEditorStatus(prev => prev+' Vị trí chưa hợp lệ để chơi; bạn vẫn có thể tiếp tục chỉnh sửa.');
+      }
+      return;
+    }if(game.isGameOver()){setStatus(resultStatus(game));return;}if(game.turn()!==humanColor)return;
     if(!selected){const p=game.get(sq);if(p&&p.color===humanColor){setSelected(sq);setTargets(game.moves({square:sq,verbose:true}).map(m=>m.to));}return;}
     if(selected===sq){setSelected(null);setTargets([]);return;}
     const own=game.get(sq);if(own&&own.color===humanColor){setSelected(sq);setTargets(game.moves({square:sq,verbose:true}).map(m=>m.to));return;}
@@ -144,8 +186,8 @@ function App(){
   <div className="settingsRow"><label>Màu của bạn <select value={humanColor} onChange={e=>setHumanColor(e.target.value)}><option value="w">Trắng</option><option value="b">Đen</option></select></label><label>Độ khó Stockfish: <b>{skill}/20</b><input type="range" min="0" max="20" value={skill} onChange={e=>setSkill(Number(e.target.value))}/></label><button onClick={()=>setFlipped(v=>!v)}>🔄 Lật bàn</button></div>
   <Board game={game} selected={selected} targets={targets} flipped={flipped} editorMode={editorMode} editorSquare={editorSquare} editorPieces={editorPieces} onSquare={onSquare}/>
   <div className="controls"><button onClick={analysePosition} disabled={thinking}>🧠 Phân tích vị trí</button><span>{best&&'Nước tốt nhất: '+best}</span></div>{error&&<p className="error">{error}</p>}
-  <section className="editor"><button className="editorToggle" onClick={()=>{if(!editorMode){setEditorPieces(gameToEditorPieces(game));setFenText(game.fen());setEditorMode(true);setEditorSquare(null);setEditorStatus('Bật chế độ xếp cờ: chọn ô, chọn quân rồi bấm Đặt/thay quân.');}else{setEditorMode(false);setEditorSquare(null);setEditorStatus('Đã thoát chế độ xếp cờ.');}}}>{editorMode?'↩️ Thoát xếp cờ':'🛠️ Chế độ xếp cờ'}</button>
-  {editorMode&&<div className="editorTools"><p>Chọn một ô trên bàn cờ, chọn quân rồi bấm Đặt/thay. Bạn cũng có thể sửa FEN trực tiếp.</p><label>Quân muốn đặt / thay<select value={pieceChoice} onChange={e=>setPieceChoice(e.target.value)}>{PIECES.map(([label,code])=><option key={label} value={code}>{label}</option>)}</select></label><div className="buttonRow"><button onClick={placePiece}>♟ Đặt / thay quân</button><button onClick={clearBoard}>🧹 Xóa hết (FEN)</button><button onClick={resetBoard}>♟ Vị trí ban đầu</button></div><label>FEN của vị trí hiện tại<textarea rows="2" value={fenText} onChange={e=>setFenText(e.target.value)}/></label><div className="buttonRow"><button onClick={validateFen}>🔎 Kiểm tra FEN</button><button onClick={applyFen}>📋 Áp dụng FEN</button><button className="primary" onClick={startFromFen}>▶️ Xếp cờ → Chơi</button></div>{editorStatus&&<p>{editorStatus}</p>}</div>}</section>
+  <section className="editor"><button className="editorToggle" onClick={()=>{if(!editorMode){setEditorPieces(gameToEditorPieces(game));setFenText(game.fen());setEditorMode(true);setEditorSquare(null);setEditorStatus('Bật chế độ xếp cờ: bấm quân muốn di chuyển rồi bấm ô đích. Chọn quân trong danh sách để đặt mới.');}else{setEditorMode(false);setEditorSquare(null);setEditorStatus('Đã thoát chế độ xếp cờ.');}}}>{editorMode?'↩️ Thoát xếp cờ':'🛠️ Chế độ xếp cờ'}</button>
+  {editorMode&&<div className="editorTools"><p>Di chuyển: bấm quân trên bàn cờ rồi bấm ô đích bất kỳ. Nếu ô đích có quân, quân đó sẽ bị thay thế. Muốn đặt quân mới, chọn ô rồi chọn quân bên dưới. Bạn cũng có thể sửa FEN trực tiếp.</p><label>Quân muốn đặt / thay<select value={pieceChoice} onChange={e=>setPieceChoice(e.target.value)}>{PIECES.map(([label,code])=><option key={label} value={code}>{label}</option>)}</select></label><div className="buttonRow"><button onClick={placePiece}>♟ Đặt / thay quân</button><button onClick={clearBoard}>🧹 Xóa hết (FEN)</button><button onClick={resetBoard}>♟ Vị trí ban đầu</button></div><label>FEN của vị trí hiện tại<textarea rows="2" value={fenText} onChange={e=>setFenText(e.target.value)}/></label><div className="buttonRow"><button onClick={validateFen}>🔎 Kiểm tra FEN</button><button onClick={applyFen}>📋 Áp dụng FEN</button><button className="primary" onClick={startFromFen}>▶️ Xếp cờ → Chơi</button></div>{editorStatus&&<p>{editorStatus}</p>}</div>}</section>
   </div></section></main>;
 }
 export default App;
