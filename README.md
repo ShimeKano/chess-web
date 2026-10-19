@@ -1,6 +1,6 @@
 # Chess Web
 
-A lightweight static chess app built with React, Vite, and chess.js.
+A lightweight static chess app built with React, Vite, and chess.js..
 
 ## Features
 
