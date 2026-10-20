@@ -13,6 +13,38 @@ const PIECES = [
 const PIECE_CODES = {k:'k',q:'q',r:'r',b:'b',n:'n',p:'p'};
 const ASSET_BASE = 'https://raw.githubusercontent.com/ShimeKano/covua/main/assneo';
 
+const OPENINGS = [
+  { id: 'stockfish', label: 'Stockfish tự tính', moves: [] },
+  { id: 'london', label: 'London System', moves: ['d4','d5','Bf4','Nf6','e3','c5','c3','Nc6','Nd2','e6','Ngf3','Bd6'] },
+  { id: 'ruy-lopez', label: 'Ruy López', moves: ['e4','e5','Nf3','Nc6','Bb5','a6','Ba4','Nf6','O-O','Be7','Re1','b5','Bb3','d6'] },
+  { id: 'italian', label: 'Italian Game', moves: ['e4','e5','Nf3','Nc6','Bc4','Bc5','c3','Nf6','d3','d6'] },
+  { id: 'queens-gambit', label: "Queen's Gambit", moves: ['d4','d5','c4','e6','Nc3','Nf6','Bg5','Be7','e3','O-O'] },
+  { id: 'sicilian', label: 'Sicilian Defense', moves: ['e4','c5','Nf3','d6','d4','cxd4','Nxd4','Nf6','Nc3','a6'] },
+  { id: 'french', label: 'French Defense', moves: ['e4','e6','d4','d5','Nc3','Nf6'] },
+  { id: 'caro-kann', label: 'Caro-Kann Defense', moves: ['e4','c6','d4','d5','Nc3','dxe4','Nxe4','Bf5','Ng3','Bg6'] },
+  { id: 'reti', label: 'Réti Opening', moves: ['Nf3','d5','g3','Nf6','Bg2','e6','O-O','Be7'] }
+];
+
+function openingBookMove(game, openingId) {
+  const opening = OPENINGS.find(item => item.id === openingId);
+  if (!opening || opening.moves.length === 0) return null;
+  try {
+    const book = new Chess();
+    const targetFen = game.fen();
+    for (const san of opening.moves) {
+      if (book.fen() === targetFen) {
+        const move = book.move(san);
+        return move ? move.from + move.to + (move.promotion || '') : null;
+      }
+      if (!book.move(san)) return null;
+    }
+  } catch {
+    // A book line is optional; invalid/unavailable lines must never block Stockfish.
+  }
+  return null;
+}
+
+
 function gameToEditorPieces(game) {
   const pieces = {};
   for (let rank = 1; rank <= 8; rank++) {
@@ -91,10 +123,10 @@ function Board({ game, selected, targets, flipped, editorMode, editorSquare, edi
 }
 
 function App(){
-  const [game,setGame]=useState(()=>new Chess()),[selected,setSelected]=useState(null),[targets,setTargets]=useState([]),[status,setStatus]=useState('Chọn màu quân rồi bấm Ván mới.'),[best,setBest]=useState(''),[skill,setSkill]=useState(8),[humanColor,setHumanColor]=useState('w'),[flipped,setFlipped]=useState(false),[thinking,setThinking]=useState(false),[error,setError]=useState(''),[history,setHistory]=useState([new Chess().fen()]),[editorMode,setEditorMode]=useState(false),[editorSquare,setEditorSquare]=useState(null),[pieceChoice,setPieceChoice]=useState('wp'),[fenText,setFenText]=useState(new Chess().fen()),[editorStatus,setEditorStatus]=useState(''),[editorPieces,setEditorPieces]=useState(()=>gameToEditorPieces(new Chess()));
+  const [game,setGame]=useState(()=>new Chess()),[selected,setSelected]=useState(null),[targets,setTargets]=useState([]),[status,setStatus]=useState('Chọn màu quân rồi bấm Ván mới.'),[best,setBest]=useState(''),[skill,setSkill]=useState(8),[humanColor,setHumanColor]=useState('w'),[flipped,setFlipped]=useState(false),[thinking,setThinking]=useState(false),[error,setError]=useState(''),[history,setHistory]=useState([new Chess().fen()]),[editorMode,setEditorMode]=useState(false),[editorSquare,setEditorSquare]=useState(null),[pieceChoice,setPieceChoice]=useState('wp'),[fenText,setFenText]=useState(new Chess().fen()),[editorStatus,setEditorStatus]=useState(''),[editorPieces,setEditorPieces]=useState(()=>gameToEditorPieces(new Chess())),[opening,setOpening]=useState('stockfish'),[showOpenings,setShowOpenings]=useState(false);
   function resultStatus(g){if(g.isCheckmate())return 'Chiếu hết — '+(g.turn()==='w'?'Đen thắng!':'Trắng thắng!');if(g.isDraw())return 'Ván cờ hòa.';return g.isCheck()?'Chiếu!':'Lượt '+(g.turn()==='w'?'Trắng':'Đen');}
   function pushPosition(g){setGame(g);setFenText(g.fen());setHistory(h=>[...h,g.fen()]);setSelected(null);setTargets([]);setStatus(resultStatus(g));}
-  async function runEngine(g,level=skill){if(g.isGameOver())return g;setThinking(true);setError('');setStatus('Stockfish đang suy nghĩ…');try{const uci=await bestMove(g.fen(),level,1000);if(!uci||uci==='(none)')throw new Error('Engine không trả về nước đi.');const next=new Chess(g.fen());const move=next.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||'q'});if(!move)throw new Error('Stockfish trả về nước đi không hợp lệ: '+uci);pushPosition(next);return next;}catch(e){setError('Stockfish chưa sẵn sàng: '+e.message);setStatus('Không thể lấy nước đi từ Stockfish.');return g;}finally{setThinking(false);}}
+  async function runEngine(g,level=skill){if(g.isGameOver())return g;setThinking(true);setError('');setStatus('Stockfish đang suy nghĩ…');try{let uci=null;try{uci=openingBookMove(g,opening);}catch{uci=null;}if(uci){const check=new Chess(g.fen());const bookMove=check.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||'q'});if(!bookMove)uci=null;}if(!uci)uci=await bestMove(g.fen(),level,1000);if(!uci||uci==='(none)')throw new Error('Engine không trả về nước đi.');const next=new Chess(g.fen());const move=next.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||'q'});if(!move)throw new Error('Stockfish trả về nước đi không hợp lệ: '+uci);pushPosition(next);return next;}catch(e){setError('Stockfish chưa sẵn sàng: '+e.message);setStatus('Không thể lấy nước đi từ Stockfish.');return g;}finally{setThinking(false);}}
   async function newGame(){const g=new Chess();setGame(g);setHistory([g.fen()]);setSelected(null);setTargets([]);setEditorMode(false);setEditorSquare(null);setBest('');setError('');setFenText(g.fen());setFlipped(humanColor==='b');setStatus('Ván mới');if(humanColor==='b'){const after=await runEngine(g,skill);setHistory([after.fen()]);}else setStatus('Lượt Trắng — bạn đi trước.');}
   async function startFromFen(){try{const g=new Chess(fenText.trim());setGame(g);setHistory([g.fen()]);setSelected(null);setTargets([]);setEditorMode(false);setEditorSquare(null);setFlipped(humanColor==='b');setError('');setEditorStatus('Đã bắt đầu từ vị trí FEN.');setStatus(resultStatus(g));if(g.turn()!==humanColor&&!g.isGameOver()){const after=await runEngine(g,skill);setHistory([after.fen()]);}}catch(e){setEditorStatus('FEN không hợp lệ: '+e.message);}}
   async function onSquare(sq){if(thinking)return;setError('');if(editorMode){
@@ -183,7 +215,7 @@ function App(){
   }
   return <main><header><div><h1>♟ Chess Web</h1><p>Chơi cờ vua với Stockfish chạy trực tiếp trên trình duyệt.</p></div></header>
   <section className="gameLayout"><div className="gamePanel"><div className="gameTop"><strong>{status}</strong><div className="topButtons"><button onClick={newGame} disabled={thinking}>🎮 Ván mới</button><button onClick={undo} disabled={thinking}>⏪ Đi lại</button></div></div>
-  <div className="settingsRow"><label>Màu của bạn <select value={humanColor} onChange={e=>setHumanColor(e.target.value)}><option value="w">Trắng</option><option value="b">Đen</option></select></label><label>Độ khó Stockfish: <b>{skill}/20</b><input type="range" min="0" max="20" value={skill} onChange={e=>setSkill(Number(e.target.value))}/></label><button onClick={()=>setFlipped(v=>!v)}>🔄 Lật bàn</button></div>
+  <div className="settingsRow"><label>Màu của bạn <select value={humanColor} onChange={e=>setHumanColor(e.target.value)}><option value="w">Trắng</option><option value="b">Đen</option></select></label><div className="openingControl"><button className="openingToggle" aria-expanded={showOpenings} onClick={()=>setShowOpenings(v=>!v)}>Khai cuộc: {OPENINGS.find(item=>item.id===opening)?.label || 'Stockfish tự tính'} <span aria-hidden="true">{showOpenings?'▴':'▾'}</span></button>{showOpenings&&<div className="openingMenu" role="group" aria-label="Chọn khai cuộc">{OPENINGS.map(item=><button key={item.id} className={opening===item.id?'openingOption active':'openingOption'} onClick={()=>{setOpening(item.id);setShowOpenings(false);setStatus(item.id==='stockfish'?'Chế độ Stockfish tự tính.':'Đã chọn '+item.label+' — chỉ theo sách khi vị trí phù hợp.');}}>{item.label}{opening===item.id?' ✓':''}</button>)}</div>}</div><label>Độ khó Stockfish: <b>{skill}/20</b><input type="range" min="0" max="20" value={skill} onChange={e=>setSkill(Number(e.target.value))}/></label><button onClick={()=>setFlipped(v=>!v)}>🔄 Lật bàn</button></div>
   <Board game={game} selected={selected} targets={targets} flipped={flipped} editorMode={editorMode} editorSquare={editorSquare} editorPieces={editorPieces} onSquare={onSquare}/>
   <div className="controls"><button onClick={analysePosition} disabled={thinking}>🧠 Phân tích vị trí</button><span>{best&&'Nước tốt nhất: '+best}</span></div>{error&&<p className="error">{error}</p>}
   <section className="editor"><button className="editorToggle" onClick={()=>{if(!editorMode){setEditorPieces(gameToEditorPieces(game));setFenText(game.fen());setEditorMode(true);setEditorSquare(null);setEditorStatus('Bật chế độ xếp cờ: bấm quân muốn di chuyển rồi bấm ô đích. Chọn quân trong danh sách để đặt mới.');}else{setEditorMode(false);setEditorSquare(null);setEditorStatus('Đã thoát chế độ xếp cờ.');}}}>{editorMode?'↩️ Thoát xếp cờ':'🛠️ Chế độ xếp cờ'}</button>
