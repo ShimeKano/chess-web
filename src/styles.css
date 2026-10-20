@@ -29,3 +29,13 @@
 .editorTools textarea{width:100%;resize:vertical;font-family:ui-monospace,monospace}
 .editor .primary{background:#2563eb}
 @media(max-width:800px){.boardWrap{width:94vw;max-width:680px}.settingsRow{align-items:flex-start;flex-direction:column}.settingsRow label{width:100%}.settingsRow input[type=range]{flex:1}.topButtons{flex-wrap:wrap}.gameTop{align-items:flex-start;gap:8px;flex-direction:column}}
+
+/* Optional opening selector: compact by default and safe to ignore. */
+.openingControl{position:relative;display:flex;align-items:center}
+.openingToggle{border:1px solid #374151;background:#172033;color:#e5e7eb;border-radius:9px;padding:9px 12px;max-width:100%;text-align:left}
+.openingToggle span{margin-left:6px;color:#93c5fd}
+.openingMenu{position:absolute;z-index:20;top:calc(100% + 6px);left:0;min-width:220px;max-height:300px;overflow:auto;padding:6px;background:#111827;border:1px solid #374151;border-radius:10px;box-shadow:0 12px 30px #0008;display:flex;flex-direction:column;gap:3px}
+.openingOption{width:100%;text-align:left;border:0;border-radius:7px;padding:9px 10px;background:transparent;color:#e5e7eb}
+.openingOption:hover,.openingOption.active{background:#263449}
+.openingOption.active{color:#93c5fd}
+@media(max-width:800px){.openingControl{width:100%}.openingToggle{width:100%}.openingMenu{right:0;left:0}}
