@@ -29,16 +29,16 @@ function boot() {
           return;
         }
         if (line.startsWith('info ')) {
-          const depthMatch = line.match(/\\bdepth (\\d+)/);
-          const cpMatch = line.match(/\\bscore cp (-?\\d+)/);
-          const mateMatch = line.match(/\\bscore mate (-?\\d+)/);
-          const pvMatch = line.match(/\\bpv (.+)$/);
+          const depthMatch = line.match(/\bdepth (\d+)/);
+          const cpMatch = line.match(/\bscore cp (-?\d+)/);
+          const mateMatch = line.match(/\bscore mate (-?\d+)/);
+          const pvMatch = line.match(/\bpv (.+)$/);
           if (depthMatch && (cpMatch || mateMatch)) {
             latestInfo = {
               depth: Number(depthMatch[1]),
               cp: cpMatch ? Number(cpMatch[1]) : null,
               mate: mateMatch ? Number(mateMatch[1]) : null,
-              pv: pvMatch ? pvMatch[1].trim().split(/\\s+/) : []
+              pv: pvMatch ? pvMatch[1].trim().split(/\s+/) : []
             };
           }
         }
