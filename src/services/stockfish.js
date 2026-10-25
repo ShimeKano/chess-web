@@ -5,6 +5,8 @@ let activeResolve = null;
 let activeReject = null;
 let searchTimeout = null;
 let handshakeTimeout = null;
+let latestInfo = null;
+let activeDetailed = false;
 
 function boot() {
   if (readyPromise) return readyPromise;
@@ -26,6 +28,20 @@ function boot() {
           resolve();
           return;
         }
+        if (line.startsWith('info ')) {
+          const depthMatch = line.match(/\\bdepth (\\d+)/);
+          const cpMatch = line.match(/\\bscore cp (-?\\d+)/);
+          const mateMatch = line.match(/\\bscore mate (-?\\d+)/);
+          const pvMatch = line.match(/\\bpv (.+)$/);
+          if (depthMatch && (cpMatch || mateMatch)) {
+            latestInfo = {
+              depth: Number(depthMatch[1]),
+              cp: cpMatch ? Number(cpMatch[1]) : null,
+              mate: mateMatch ? Number(mateMatch[1]) : null,
+              pv: pvMatch ? pvMatch[1].trim().split(/\\s+/) : []
+            };
+          }
+        }
         if (line.startsWith('bestmove ')) {
           const move = line.split(/\s+/)[1] || '(none)';
           if (searchTimeout) clearTimeout(searchTimeout);
@@ -33,7 +49,7 @@ function boot() {
           const done = activeResolve;
           activeResolve = null;
           activeReject = null;
-          if (done) done(move);
+          if (done) done(activeDetailed ? { move, ...(latestInfo || {}) } : move);
         }
         if (line.startsWith('info string') && /error/i.test(line) && activeReject) {
           const fail = activeReject;
@@ -60,12 +76,14 @@ function boot() {
   return readyPromise;
 }
 
-async function search(fen, { skillLevel = 8, depth = null, moveTime = 1000 } = {}) {
+async function search(fen, { skillLevel = 8, depth = null, moveTime = 1000, detailed = false } = {}) {
   await boot();
   if (activeResolve) throw new Error('Stockfish đang xử lý một yêu cầu khác.');
   return new Promise((resolve, reject) => {
     activeResolve = resolve;
     activeReject = reject;
+    activeDetailed = detailed;
+    latestInfo = null;
     searchTimeout = setTimeout(() => {
       activeResolve = null;
       activeReject = null;
@@ -80,6 +98,10 @@ async function search(fen, { skillLevel = 8, depth = null, moveTime = 1000 } = {
 
 export function bestMove(fen, skillLevel = 8, moveTime = 1000) {
   return search(fen, { skillLevel, moveTime });
+}
+
+export function bestMoveDetailed(fen, skillLevel = 8, moveTime = 1000) {
+  return search(fen, { skillLevel, moveTime, detailed: true });
 }
 
 export function analyse(fen, depth = 12) {
