@@ -1,6 +1,6 @@
 # Opening Coach — Ruy Lopez curriculum
 
-This directory defines the first static lesson pack for the chess-web Opening Coach. The initial release is content-only: it does not require an AI API, a server, or a database.
+This directory defines the first static lesson pack for the chess-web Opening Coach. The three starter lessons are connected to the “Học khai cuộc” UI and do not require an AI API, a server, or a database.
 
 ## Goals
 
@@ -36,7 +36,7 @@ These are schema examples and starter lessons, not a claim to cover all Ruy Lope
 4. Verify every branch move and accepted exercise move is legal at its exact position.
 5. Ensure SAN in data matches chess.js SAN output.
 6. Run the app's production build on Node.js 24.
-7. Test both colors, hint progression, retry, branch navigation, and persistence of review mistakes.
+7. Manually test answer feedback, progressive hints, lesson/exercise navigation, and keyboard/screen-reader usability. The current UI does not yet persist mistake history.
 
 ## Planned curriculum
 
