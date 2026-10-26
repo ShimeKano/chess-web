@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "id": "ruy-lopez-01-foundations",
+  "title": "Ruy Lopez: nhận diện và hiểu áp lực lên e5",
+  "language": "vi",
+  "opening": {
+    "name": "Ruy Lopez",
+    "eco": [
+      "C60"
+    ],
+    "sideToTrain": "both"
+  },
+  "level": "beginner",
+  "estimatedMinutes": 10,
+  "prerequisites": [],
+  "startFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "introLine": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5"
+  ],
+  "objectives": [
+    "Nhận diện vị trí bắt đầu của Ruy Lopez.",
+    "Giải thích vì sao Bb5 gây áp lực gián tiếp lên e5.",
+    "Phân biệt áp lực chiến lược với đe dọa ăn quân ngay lập tức.",
+    "Nhận ra các phản ứng chính của Đen ở nước thứ ba."
+  ],
+  "sections": [
+    {
+      "id": "idea",
+      "heading": "Ý tưởng cốt lõi",
+      "body": "Sau 1.e4 e5 2.Nf3 Nc6 3.Bb5, tượng Trắng gây áp lực lên mã c6 — quân đang bảo vệ tốt e5. Trắng chưa trực tiếp tấn công tốt e5 bằng một quân có thể ăn ngay; đây là áp lực gián tiếp và thường cần phối hợp với phát triển quân, nhập thành và d4.",
+      "keyPoints": [
+        "Mã c6 là quân phòng thủ quan trọng của e5.",
+        "Đừng đổi tượng chỉ vì thấy có thể ăn mã; hãy cân nhắc cặp tượng và cấu trúc tốt.",
+        "Cả hai bên cần phát triển quân và giữ vua an toàn."
+      ]
+    },
+    {
+      "id": "black-choices",
+      "heading": "Đen có nhiều cách đáp lại",
+      "body": "3...a6 hỏi tượng phải quyết định; 3...Nf6 phản công vào e4; 3...Bc5 phát triển tượng chủ động; 3...f5 là lựa chọn sắc bén và rủi ro hơn. Mỗi nước dẫn tới loại thế trận khác nhau.",
+      "keyPoints": [
+        "Không có một chuỗi duy nhất bao phủ mọi ván Ruy Lopez.",
+        "Hãy nhận diện kế hoạch thay vì cố nhớ nước đi một cách máy móc."
+      ]
+    }
+  ],
+  "branches": [
+    {
+      "id": "morphy",
+      "san": "a6",
+      "explanation": "Morphy Defense: Đen hỏi tượng b5 và chuẩn bị mở rộng cánh hậu bằng ...b5 trong nhiều biến.",
+      "purpose": [
+        "Buộc Trắng quyết định giữ tượng hay đổi lấy mã c6."
+      ],
+      "children": [
+        {
+          "id": "morphy-ba4",
+          "san": "Ba4",
+          "explanation": "Trắng giữ tượng và tiếp tục gây áp lực lên mã c6.",
+          "purpose": [
+            "Giữ sức ép chiến lược.",
+            "Tránh quyết định đổi quân quá sớm."
+          ]
+        },
+        {
+          "id": "exchange",
+          "san": "Bxc6",
+          "explanation": "Trắng đổi tượng lấy mã; sau ...dxc6, Đen có thể có cặp tượng nhưng cấu trúc tốt bị thay đổi.",
+          "purpose": [
+            "Chuyển sang Exchange Variation.",
+            "Đánh giá cấu trúc tốt và cặp tượng thay vì mặc định bên nào thắng."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "berlin",
+      "san": "Nf6",
+      "explanation": "Berlin Defense: Đen tấn công tốt e4 ngay bằng mã f6.",
+      "purpose": [
+        "Gây sức ép trung tâm và phát triển quân."
+      ]
+    },
+    {
+      "id": "classical",
+      "san": "Bc5",
+      "explanation": "Classical Defense: Đen phát triển tượng ra c5 và tranh ảnh hưởng lên trung tâm.",
+      "purpose": [
+        "Phát triển chủ động nhưng cần để ý các đòn chiến thuật của Trắng."
+      ]
+    },
+    {
+      "id": "schliemann",
+      "san": "f5",
+      "explanation": "Schliemann/Jaenisch Defense: Đen phản công ngay ở trung tâm nhưng chấp nhận rủi ro chiến thuật.",
+      "purpose": [
+        "Học cách tính toán cụ thể, không áp dụng như một nước tự động."
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "foundations-black-choice",
+      "type": "branch_recognition",
+      "positionAfter": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bb5"
+      ],
+      "prompt": "Bạn cầm Đen. Nước nào là lựa chọn chính để hỏi tượng b5 và đi vào Morphy Defense?",
+      "acceptedMoves": [
+        "a6"
+      ],
+      "preferredMove": "a6",
+      "hintLevels": [
+        "Tượng Trắng đang ở b5; hãy xem nước tốt nào có thể tấn công nó mà không di chuyển quân.",
+        "Nước tốt a7 có thể tiến lên a6."
+      ],
+      "feedback": {
+        "a6": "Đúng. 3...a6 hỏi tượng và thường dẫn tới 4.Ba4 hoặc 4.Bxc6."
+      },
+      "wrongMoveFeedback": {
+        "f6": "3...Nf6 cũng là một biến Ruy Lopez quan trọng, nhưng nó thuộc Berlin Defense, không phải Morphy Defense."
+      },
+      "followUp": "Sau 3...a6, hãy so sánh 4.Ba4 với 4.Bxc6.",
+      "difficulty": "easy"
+    }
+  ],
+  "completion": {
+    "minimumAccuracy": 0.8,
+    "reviewMistakes": true,
+    "requiredExercises": 1
+  },
+  "tags": [
+    "ruy-lopez",
+    "opening-principles",
+    "both-sides",
+    "morphy",
+    "berlin"
+  ]
+}

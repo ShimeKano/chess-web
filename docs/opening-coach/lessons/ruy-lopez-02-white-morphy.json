@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "id": "ruy-lopez-02-white-morphy",
+  "title": "Cầm Trắng: chọn kế hoạch sau 3...a6",
+  "language": "vi",
+  "opening": {
+    "name": "Ruy Lopez",
+    "eco": [
+      "C70"
+    ],
+    "sideToTrain": "white"
+  },
+  "level": "beginner",
+  "estimatedMinutes": 12,
+  "prerequisites": [
+    "ruy-lopez-01-foundations"
+  ],
+  "startFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "introLine": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5",
+    "a6"
+  ],
+  "objectives": [
+    "Chọn giữa giữ tượng và đổi tượng theo kế hoạch.",
+    "Hiểu kế hoạch cơ bản của Morphy Defense.",
+    "Không coi một nước hợp lệ khác đáp án chính là nước sai."
+  ],
+  "sections": [
+    {
+      "id": "ba4",
+      "heading": "4.Ba4 — giữ áp lực",
+      "body": "Ba4 rút tượng khỏi đòn tấn công của tốt a6 nhưng vẫn giữ đường chéo hướng tới mã c6. Đây là lựa chọn phổ biến dẫn tới nhiều hệ thống Ruy Lopez kín. Đen thường tiếp tục ...Nf6, và Trắng cần phát triển quân, nhập thành, rồi chuẩn bị c3 và d4 tùy thế trận.",
+      "keyPoints": [
+        "Ba4 không làm mất áp lực lên c6.",
+        "Không nên chơi c3 và d4 mà bỏ qua phát triển hoặc an toàn vua.",
+        "Kế hoạch cụ thể phụ thuộc phản ứng của Đen."
+      ]
+    },
+    {
+      "id": "exchange",
+      "heading": "4.Bxc6 — Exchange Variation",
+      "body": "Bxc6 đổi tượng lấy mã c6. Sau ...dxc6, Đen có cặp tượng nhưng tốt c bị thay đổi cấu trúc. Trắng có thể hướng tới tàn cuộc và sử dụng đa số tốt ở cánh vua trong một số cấu trúc; Đen có nguồn lực từ cặp tượng và hoạt động quân. Đổi quân không tự động có lợi cho Trắng.",
+      "keyPoints": [
+        "Đây là lựa chọn hợp lệ và có ý tưởng riêng.",
+        "Phải đánh giá cấu trúc tốt, cặp tượng và tàn cuộc.",
+        "Không chấm Bxc6 là sai chỉ vì bài đang dạy Ba4."
+      ]
+    }
+  ],
+  "branches": [
+    {
+      "id": "main-ba4",
+      "san": "Ba4",
+      "explanation": "Lựa chọn chính trong bài: giữ tượng và tiếp tục gây áp lực chiến lược.",
+      "purpose": [
+        "Giữ tượng còn sống.",
+        "Chuẩn bị phát triển và nhập thành."
+      ],
+      "children": [
+        {
+          "id": "black-nf6",
+          "san": "Nf6",
+          "explanation": "Đen phát triển mã và gây sức ép lên e4.",
+          "purpose": [
+            "Trắng cần cân nhắc nhập thành và bảo vệ trung tâm."
+          ],
+          "children": [
+            {
+              "id": "white-c3",
+              "san": "c3",
+              "explanation": "Trắng chuẩn bị d4, nhưng phải tiếp tục phát triển quân và theo dõi phản công của Đen.",
+              "purpose": [
+                "Hỗ trợ xây dựng trung tâm e4-d4."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exchange-bxc6",
+      "san": "Bxc6",
+      "explanation": "Đổi tượng lấy mã, đi vào Exchange Variation; đây là kế hoạch thay thế chứ không phải lỗi.",
+      "purpose": [
+        "Đổi cấu trúc tốt và hướng tới kế hoạch trung cuộc khác."
+      ],
+      "children": [
+        {
+          "id": "black-dxc6",
+          "san": "dxc6",
+          "explanation": "Đen tái chiếm bằng tốt d, có cặp tượng nhưng cấu trúc tốt thay đổi.",
+          "purpose": [
+            "Mở đường cho tượng c8 và giữ cân bằng chiến lược."
+          ]
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "white-morphy-choice",
+      "type": "choose_move",
+      "positionAfter": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bb5",
+        "a6"
+      ],
+      "prompt": "Bạn cầm Trắng. Muốn giữ tượng và tiếp tục gây áp lực lên mã c6, nên đi nước nào?",
+      "acceptedMoves": [
+        "Ba4"
+      ],
+      "preferredMove": "Ba4",
+      "hintLevels": [
+        "Đen vừa tấn công tượng b5 bằng tốt a6.",
+        "Tìm ô lùi an toàn vẫn giữ đường chéo b3-c4-d5-e6-f7; tượng có thể lùi về a4."
+      ],
+      "feedback": {
+        "Ba4": "Đúng. 4.Ba4 giữ tượng và duy trì áp lực chiến lược lên mã c6."
+      },
+      "wrongMoveFeedback": {
+        "Bxc6": "Bxc6 là nước hợp lệ và dẫn tới Exchange Variation. Trong bài này mục tiêu là luyện kế hoạch giữ tượng, nên hãy thử Ba4 trước."
+      },
+      "followUp": "Tiếp tục với 4...Nf6 và chọn cách phát triển cho Trắng.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "white-morphy-alternative",
+      "type": "choose_move",
+      "positionAfter": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bb5",
+        "a6"
+      ],
+      "prompt": "Nếu bạn chủ động muốn vào Exchange Variation, nước nào thực hiện kế hoạch đó?",
+      "acceptedMoves": [
+        "Bxc6"
+      ],
+      "preferredMove": "Bxc6",
+      "hintLevels": [
+        "Hãy cân nhắc đổi tượng đang bị tấn công lấy quân đang bảo vệ e5.",
+        "Đổi tượng b5 lấy mã c6."
+      ],
+      "feedback": {
+        "Bxc6": "Đúng. Đây là Exchange Variation. Hãy tiếp tục đánh giá cặp tượng và cấu trúc tốt sau ...dxc6."
+      },
+      "difficulty": "easy"
+    }
+  ],
+  "completion": {
+    "minimumAccuracy": 0.8,
+    "reviewMistakes": true,
+    "requiredExercises": 2
+  },
+  "tags": [
+    "ruy-lopez",
+    "white",
+    "morphy-defense",
+    "exchange-variation",
+    "strategy"
+  ]
+}

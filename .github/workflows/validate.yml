@@ -1,0 +1,36 @@
+name: Validate chess-web
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [feature/opening-coach-node24]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js 24 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Validate opening lesson JSON and SAN lines
+        run: node scripts/validate-opening-lessons.mjs
+      - name: Build
+        run: npm run build
+      - name: Upload pre-merge build artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: chess-web-pr-preview
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
