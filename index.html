@@ -5,6 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#111827" />
     <title>Chess Web</title>
+    <script>
+      // Remove an old service worker/cache for this Pages project before loading React.
+      (async () => {
+        try {
+          if (!('serviceWorker' in navigator)) return;
+          const prefix = location.origin + '/chess-web/';
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          const stale = registrations.filter((registration) => registration.scope.startsWith(prefix));
+          if (!stale.length) return;
+          await Promise.all(stale.map((registration) => registration.unregister()));
+          if ('caches' in window) {
+            const keys = await caches.keys();
+            await Promise.all(keys.map((key) => caches.delete(key)));
+          }
+          if (!sessionStorage.getItem('chess-web-sw-cleaned')) {
+            sessionStorage.setItem('chess-web-sw-cleaned', '1');
+            location.reload();
+          }
+        } catch (error) {
+          console.warn('Could not clear old Chess Web cache:', error);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
