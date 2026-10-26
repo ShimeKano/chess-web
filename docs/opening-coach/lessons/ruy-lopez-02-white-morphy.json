@@ -67,14 +67,16 @@
           "explanation": "Đen phát triển mã và gây sức ép lên e4.",
           "purpose": [
             "Trắng cần cân nhắc nhập thành và bảo vệ trung tâm."
-          ]
-        },
-        {
-          "id": "white-c3",
-          "san": "c3",
-          "explanation": "Trắng chuẩn bị d4, nhưng phải tiếp tục phát triển quân và theo dõi phản công của Đen.",
-          "purpose": [
-            "Hỗ trợ xây dựng trung tâm e4-d4."
+          ],
+          "children": [
+            {
+              "id": "white-c3",
+              "san": "c3",
+              "explanation": "Trắng chuẩn bị d4, nhưng phải tiếp tục phát triển quân và theo dõi phản công của Đen.",
+              "purpose": [
+                "Hỗ trợ xây dựng trung tâm e4-d4."
+              ]
+            }
           ]
         }
       ]
