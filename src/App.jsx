@@ -79,7 +79,7 @@ function fenWithPlacement(placement, sourceFen) {
   return [placement, fields[1] || 'w', fields[2] || '-', fields[3] || '-', fields[4] || '0', fields[5] || '1'].join(' ');
 }
 
-function Board({ game, selected, targets, flipped, editorMode, editorSquare, editorPieces, coachHint, onSquare }) {
+function Board({ game, selected, targets, flipped, editorMode, editorSquare, editorPieces, onSquare }) {
   const rows = flipped ? [0,1,2,3,4,5,6,7] : [7,6,5,4,3,2,1,0];
   const cols = flipped ? [7,6,5,4,3,2,1,0] : [0,1,2,3,4,5,6,7];
   return <div className="boardWrap">
@@ -87,10 +87,10 @@ function Board({ game, selected, targets, flipped, editorMode, editorSquare, edi
     <div className="boardColumn">
       <div className="board">{rows.flatMap(r=>cols.map(c=>{
         const sq=FILES[c]+(r+1), draftCode=editorMode?editorPieces[sq]:null, actualPiece=game.get(sq), piece=editorMode?(draftCode?{color:draftCode===draftCode.toUpperCase()?'w':'b',type:draftCode.toLowerCase()}:null):actualPiece, isLight=(r+c)%2===1;
-        const isTarget=targets.includes(sq), coachFrom=!!coachHint&&coachHint.slice(0,2)===sq, coachTo=!!coachHint&&coachHint.slice(2,4)===sq;
+        const isTarget=targets.includes(sq);
         const last=game.history({verbose:true}).slice(-1)[0];
         const isLast=last&&(last.from===sq||last.to===sq);
-        return <button key={sq} aria-label={sq} className={'square '+(isLight?'light':'dark')+(selected===sq?' selected':'')+(isTarget?' target':'')+(editorMode&&editorSquare===sq?' editorSelected':'')+(isLast?' lastMove':'')+(coachFrom?' coachFrom':'')+(coachTo?' coachTo':'')} onClick={()=>onSquare(sq)}>
+        return <button key={sq} aria-label={sq} className={'square '+(isLight?'light':'dark')+(selected===sq?' selected':'')+(isTarget?' target':'')+(editorMode&&editorSquare===sq?' editorSelected':'')+(isLast?' lastMove':'')} onClick={()=>onSquare(sq)}>
           {piece && <img className={'piece '+(piece.color==='w'?'whitePiece':'blackPiece')} src={ASSET_BASE+'/'+piece.color+PIECE_CODES[piece.type]+'.png'} alt={(piece.color==='w'?'White ':'Black ')+piece.type} draggable="false" onError={e=>{e.currentTarget.style.display='none';}}/>}
           {isTarget&&!piece&&<span className="moveDot"/>}
           {isTarget&&piece&&<span className="captureRing"/>}
@@ -102,9 +102,9 @@ function Board({ game, selected, targets, flipped, editorMode, editorSquare, edi
 }
 
 function App(){
-  const [game,setGame]=useState(()=>new Chess()),[selected,setSelected]=useState(null),[targets,setTargets]=useState([]),[status,setStatus]=useState('Chọn màu quân rồi bấm Ván mới.'),[best,setBest]=useState(''),[skill,setSkill]=useState(8),[humanColor,setHumanColor]=useState('w'),[flipped,setFlipped]=useState(false),[thinking,setThinking]=useState(false),[error,setError]=useState(''),[history,setHistory]=useState([new Chess().fen()]),[editorMode,setEditorMode]=useState(false),[editorSquare,setEditorSquare]=useState(null),[pieceChoice,setPieceChoice]=useState('wp'),[fenText,setFenText]=useState(new Chess().fen()),[editorStatus,setEditorStatus]=useState(''),[editorPieces,setEditorPieces]=useState(()=>gameToEditorPieces(new Chess())),[opening,setOpening]=useState('stockfish'),[showOpenings,setShowOpenings]=useState(false),[evalCp,setEvalCp]=useState(0),[evalMate,setEvalMate]=useState(null),[feedback,setFeedback]=useState(''),[autoWarn,setAutoWarn]=useState(true),[studyTab,setStudyTab]=useState('play'),[reviewInfo,setReviewInfo]=useState(''),[coachHint,setCoachHint]=useState(''),[coachMessage,setCoachMessage]=useState(''),[lessonFen,setLessonFen]=useState(new Chess().fen());
+  const [game,setGame]=useState(()=>new Chess()),[selected,setSelected]=useState(null),[targets,setTargets]=useState([]),[status,setStatus]=useState('Chọn màu quân rồi bấm Ván mới.'),[best,setBest]=useState(''),[skill,setSkill]=useState(8),[humanColor,setHumanColor]=useState('w'),[flipped,setFlipped]=useState(false),[thinking,setThinking]=useState(false),[error,setError]=useState(''),[history,setHistory]=useState([new Chess().fen()]),[editorMode,setEditorMode]=useState(false),[editorSquare,setEditorSquare]=useState(null),[pieceChoice,setPieceChoice]=useState('wp'),[fenText,setFenText]=useState(new Chess().fen()),[editorStatus,setEditorStatus]=useState(''),[editorPieces,setEditorPieces]=useState(()=>gameToEditorPieces(new Chess())),[opening,setOpening]=useState('stockfish'),[showOpenings,setShowOpenings]=useState(false),[evalCp,setEvalCp]=useState(0),[evalMate,setEvalMate]=useState(null),[feedback,setFeedback]=useState(''),[autoWarn,setAutoWarn]=useState(true),[studyTab,setStudyTab]=useState('play'),[reviewInfo,setReviewInfo]=useState(''),[lessonFen,setLessonFen]=useState(new Chess().fen());
   function resultStatus(g){if(g.isCheckmate())return 'Chiếu hết — '+(g.turn()==='w'?'Đen thắng!':'Trắng thắng!');if(g.isDraw())return 'Ván cờ hòa.';return g.isCheck()?'Chiếu!':'Lượt '+(g.turn()==='w'?'Trắng':'Đen');}
-  function pushPosition(g){setGame(g);setCoachHint('');setCoachMessage('');setEvalCp(0);setEvalMate(null);setFenText(g.fen());setHistory(h=>[...h,g.fen()]);setSelected(null);setTargets([]);setStatus(resultStatus(g));}
+  function pushPosition(g){setGame(g);setEvalCp(0);setEvalMate(null);setFenText(g.fen());setHistory(h=>[...h,g.fen()]);setSelected(null);setTargets([]);setStatus(resultStatus(g));}
   async function runEngine(g,level=skill){if(g.isGameOver())return g;setThinking(true);setError('');setStatus('Stockfish đang suy nghĩ…');try{let uci=null;try{uci=openingBookMove(g,opening);}catch{uci=null;}if(uci){const check=new Chess(g.fen());const bookMove=check.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||'q'});if(!bookMove)uci=null;}let engineResult=null;if(!uci){engineResult=await bestMoveDetailed(g.fen(),level,1000);uci=engineResult?.move;}if(!uci||uci==='(none)')throw new Error('Engine không trả về nước đi.');const next=new Chess(g.fen());const move=next.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||'q'});if(!move)throw new Error('Stockfish trả về nước đi không hợp lệ: '+uci);pushPosition(next);try{const scored=await bestMoveDetailed(next.fen(),20,500);const whiteMate=scored.mate==null?null:(next.turn()==='w'?scored.mate:-scored.mate);if(whiteMate!==null){setEvalMate(whiteMate);setEvalCp(whiteMate>0?2000:whiteMate<0?-2000:0);}else if(Number.isFinite(scored.cp)){setEvalCp(next.turn()==='w'?scored.cp:-scored.cp);setEvalMate(null);}}catch{}return next;}catch(e){setError('Stockfish chưa sẵn sàng: '+e.message);setStatus('Không thể lấy nước đi từ Stockfish.');return g;}finally{setThinking(false);}}
   async function newGame(){const g=new Chess();setGame(g);setHistory([g.fen()]);setSelected(null);setTargets([]);setEditorMode(false);setEditorSquare(null);setBest('');setError('');setFenText(g.fen());setFlipped(humanColor==='b');setStatus('Ván mới');if(humanColor==='b'){const after=await runEngine(g,skill);setHistory([after.fen()]);}else setStatus('Lượt Trắng — bạn đi trước.');}
   async function startFromFen(){try{const g=new Chess(fenText.trim());setGame(g);setHistory([g.fen()]);setSelected(null);setTargets([]);setEditorMode(false);setEditorSquare(null);setFlipped(humanColor==='b');setError('');setEditorStatus('Đã bắt đầu từ vị trí FEN.');setStatus(resultStatus(g));if(g.turn()!==humanColor&&!g.isGameOver()){const after=await runEngine(g,skill);setHistory([after.fen()]);}}catch(e){setEditorStatus('FEN không hợp lệ: '+e.message);}}
@@ -157,41 +157,6 @@ function App(){
     try{const beforeFen=game.fen();const g=new Chess(beforeFen);const m=g.move({from:selected,to:sq,promotion:'q'});if(!m){setSelected(null);setTargets([]);return;}setThinking(true);setCoachHint('');setCoachMessage('');setFeedback('');pushPosition(g);if(g.isGameOver()){setThinking(false);return;}if(autoWarn){try{const beforeEval=await bestMoveDetailed(beforeFen,20,450);const afterEval=await bestMoveDetailed(g.fen(),20,450);const beforeWhite=Number.isFinite(beforeEval.cp)?(game.turn()==='w'?beforeEval.cp:-beforeEval.cp):0;const afterWhite=Number.isFinite(afterEval.cp)?(g.turn()==='w'?afterEval.cp:-afterEval.cp):beforeWhite;const loss=humanColor==='w'?beforeWhite-afterWhite:afterWhite-beforeWhite;if(loss>=100){const better=beforeEval.pv?.[0]||'';let betterSan='';if(better.length>=4){try{const tmp=new Chess(beforeFen);const bm=tmp.move({from:better.slice(0,2),to:better.slice(2,4),promotion:better[4]||'q'});betterSan=bm?.san||better;}catch{betterSan=better;}}setFeedback('Có thể là sai lầm: đánh giá xấu đi khoảng '+(loss/100).toFixed(1)+' tốt.'+(betterSan?' Nước nên cân nhắc: '+betterSan+'.':'')+' Sau khi đối thủ đi, hãy kiểm tra quân bị đe dọa và các nước chiếu/bắt quân.');}const whiteMate=afterEval.mate==null?null:(g.turn()==='w'?afterEval.mate:-afterEval.mate);if(whiteMate!==null){setEvalMate(whiteMate);setEvalCp(whiteMate>0?2000:whiteMate<0?-2000:0);}else if(Number.isFinite(afterEval.cp)){setEvalCp(g.turn()==='w'?afterEval.cp:-afterEval.cp);setEvalMate(null);}}catch{setFeedback('Chưa phân tích được nước vừa đi; ván cờ vẫn tiếp tục bình thường.');}}await runEngine(g,skill);}catch{setSelected(null);setTargets([]);}
   }
   function undo(){if(thinking)return;if(history.length<2){setStatus('Chưa có nước đi để hoàn tác.');return;}const targetIndex=history.length>=3?history.length-3:history.length-2;const nextHistory=history.slice(0,targetIndex+1),g=new Chess(nextHistory[nextHistory.length-1]);setHistory(nextHistory);setGame(g);setFenText(g.fen());setSelected(null);setTargets([]);setError('');setStatus('Đã hoàn tác. '+resultStatus(g));}
-  async function suggestOpeningMove(){
-    if(thinking)return;
-    if(game.isGameOver()){setCoachMessage('Ván cờ đã kết thúc. Hãy tạo ván mới để tiếp tục học.');return;}
-    if(game.turn()!==humanColor){setCoachMessage('Đang đến lượt đối thủ. Hãy chờ đối thủ đi xong, rồi tôi sẽ gợi ý nước cho bên '+(humanColor==='w'?'Trắng':'Đen')+'.');return;}
-    const positionFen=game.fen();
-    setThinking(true);setCoachHint('');setCoachMessage('Đang tìm nước phù hợp cho bên '+(humanColor==='w'?'Trắng':'Đen')+'…');
-    try{
-      let uci=openingBookMove(game,opening);
-      let source='';
-      if(uci){
-        const check=new Chess(positionFen);
-        const bookMove=check.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||'q'});
-        if(!bookMove||bookMove.color!==humanColor)uci=null;
-        else source='Nước tiếp theo trong biến '+(OPENINGS.find(item=>item.id===opening)?.label||'khai cuộc đã chọn')+'.';
-      }
-      if(!uci){
-        const result=await bestMoveDetailed(positionFen,20,1200);
-        uci=result?.move;
-        source=opening==='stockfish'
-          ?'Stockfish phân tích vị trí hiện tại.'
-          :'Vị trí đã lệch khỏi biến mẫu; Stockfish đang phân tích vị trí thực tế, không ép bro đi theo sách.';
-        if(result){
-          const whiteMate=result.mate==null?null:(game.turn()==='w'?result.mate:-result.mate);
-          if(whiteMate!==null){setEvalMate(whiteMate);setEvalCp(whiteMate>0?2000:whiteMate<0?-2000:0);}
-          else if(Number.isFinite(result.cp)){setEvalCp(game.turn()==='w'?result.cp:-result.cp);setEvalMate(null);}
-        }
-      }
-      if(!uci||uci==='(none)')throw new Error('Stockfish không trả về nước đi.');
-      const move=game.moves({verbose:true}).find(item=>item.from+item.to+(item.promotion||'')===uci);
-      if(!move)throw new Error('Nước được đề xuất không hợp lệ ở thế cờ hiện tại.');
-      setCoachHint(uci);setBest(move.san+' ('+uci+')');
-      setCoachMessage('Gợi ý cho bên '+(humanColor==='w'?'Trắng':'Đen')+': '+move.san+' — '+move.from+' → '+move.to+'. '+source+' Hãy xem ô được tô sáng trên bàn cờ.');
-    }catch(e){setCoachMessage('Chưa thể tìm gợi ý: '+e.message);}
-    finally{setThinking(false);}
-  }
   async function analysePosition(){if(thinking)return;setThinking(true);setBest('Đang phân tích…');try{const uci=await analyse(game.fen(),12);if(!uci||uci==='(none)'){setBest('Không có nước đi');return;}const g=new Chess(game.fen());const m=g.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||'q'});setBest(m?m.san+' ('+uci+')':uci);}catch(e){setBest('Phân tích lỗi: '+e.message);}finally{setThinking(false);}}
   function downloadText(name, text, type='text/plain;charset=utf-8'){const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);}
   function exportPgn(){const pgn=game.pgn({maxWidth:100});downloadText('chess-web-game.pgn',pgn||'[Event "Chess Web"]\\n\\n*','application/x-chess-pgn;charset=utf-8');setReviewInfo('Đã xuất PGN.');}
