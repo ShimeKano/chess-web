@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "id": "ruy-lopez-03-black-after-castling",
+  "title": "Cầm Đen: chọn Closed hay Open Ruy Lopez",
+  "language": "vi",
+  "opening": {
+    "name": "Ruy Lopez",
+    "eco": [
+      "C84",
+      "C80"
+    ],
+    "sideToTrain": "black"
+  },
+  "level": "intermediate",
+  "estimatedMinutes": 14,
+  "prerequisites": [
+    "ruy-lopez-01-foundations"
+  ],
+  "startFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "introLine": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5",
+    "a6",
+    "Ba4",
+    "Nf6",
+    "O-O"
+  ],
+  "objectives": [
+    "Nhận diện hai kế hoạch quan trọng của Đen sau 5.O-O.",
+    "Hiểu ...Be7 là cách phát triển kín, còn ...Nxe4 mở biến Open.",
+    "Không bắt buộc chọn cùng một kế hoạch trong mọi ván."
+  ],
+  "sections": [
+    {
+      "id": "closed",
+      "heading": "5...Be7 — Closed Ruy Lopez",
+      "body": "...Be7 phát triển tượng f8 và chuẩn bị nhập thành. Đen thường củng cố trung tâm, tiếp tục phát triển quân và chờ thời điểm phản công bằng ...Na5, ...c5 hoặc ...d5 tùy biến. Đây là lựa chọn chiến lược, không phải nước buộc phải chơi trong mọi vị trí.",
+      "keyPoints": [
+        "Ưu tiên phát triển và an toàn vua.",
+        "Theo dõi kế hoạch c3-d4 của Trắng.",
+        "Không phản công ...d5 chỉ vì đã học thuộc tên biến; cần kiểm tra tính toán."
+      ]
+    },
+    {
+      "id": "open",
+      "heading": "5...Nxe4 — Open Ruy Lopez",
+      "body": "Đen có thể lấy tốt e4 bằng mã f6. Đây là lựa chọn lý thuyết quan trọng dẫn tới Open Ruy Lopez. Tuy nhiên, lấy tốt không có nghĩa là thắng tốt miễn phí: Trắng có thể phản công, phát triển quân và tạo áp lực lên mã. Trước khi chọn, hãy tính các nước tiếp theo và kiểm tra an toàn của mã.",
+      "keyPoints": [
+        "Đây là một nhánh chính thức, không phải lỗi tự động.",
+        "Đánh giá hoạt động quân và thời gian phát triển, không chỉ đếm tốt.",
+        "Nếu không muốn đi vào lý thuyết mở, ...Be7 là lựa chọn đơn giản hơn về mặt kế hoạch."
+      ]
+    }
+  ],
+  "branches": [
+    {
+      "id": "closed-be7",
+      "san": "Be7",
+      "explanation": "Phát triển tượng, chuẩn bị nhập thành và đi vào Closed Ruy Lopez.",
+      "purpose": [
+        "Giữ cấu trúc ổn định.",
+        "Tiếp tục phát triển trước khi phản công trung tâm."
+      ],
+      "children": [
+        {
+          "id": "white-re1",
+          "san": "Re1",
+          "explanation": "Trắng củng cố tốt e4 và hỗ trợ kế hoạch trung tâm.",
+          "purpose": [
+            "Đen cần tiếp tục phát triển và theo dõi d4."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "open-nxe4",
+      "san": "Nxe4",
+      "explanation": "Đen ăn tốt e4 và đi vào Open Ruy Lopez. Cần tính các phản ứng của Trắng, không giả định rằng Đen giữ được tốt miễn phí.",
+      "purpose": [
+        "Mở thế trận và tạo biến chiến thuật."
+      ],
+      "children": [
+        {
+          "id": "white-d4",
+          "san": "d4",
+          "explanation": "Trắng phản công trung tâm; Đen phải tính tiếp thay vì chỉ cố giữ tốt e4.",
+          "purpose": [
+            "Phát triển và hoạt động quân có thể quan trọng hơn giữ vật chất."
+          ]
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "black-closed-choice",
+      "type": "choose_move",
+      "positionAfter": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bb5",
+        "a6",
+        "Ba4",
+        "Nf6",
+        "O-O"
+      ],
+      "prompt": "Bạn cầm Đen và muốn chọn kế hoạch phát triển kín, chuẩn bị nhập thành. Nước nào phù hợp?",
+      "acceptedMoves": [
+        "Be7"
+      ],
+      "preferredMove": "Be7",
+      "hintLevels": [
+        "Hãy phát triển quân chưa ra khỏi hàng cuối và chuẩn bị đưa vua tới nơi an toàn.",
+        "Tượng f8 có thể phát triển tới e7."
+      ],
+      "feedback": {
+        "Be7": "Đúng. ...Be7 phát triển tượng và chuẩn bị nhập thành trong Closed Ruy Lopez."
+      },
+      "wrongMoveFeedback": {
+        "Nxe4": "...Nxe4 là nước hợp lệ và đi vào Open Ruy Lopez. Nhưng câu hỏi đang yêu cầu kế hoạch kín; thử ...Be7."
+      },
+      "followUp": "Sau ...Be7, tiếp tục học cách Đen đối phó c3 và d4.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "black-open-choice",
+      "type": "choose_move",
+      "positionAfter": [
+        "e4",
+        "e5",
+        "Nf3",
+        "Nc6",
+        "Bb5",
+        "a6",
+        "Ba4",
+        "Nf6",
+        "O-O"
+      ],
+      "prompt": "Bạn muốn chủ động lấy tốt e4 và chấp nhận một biến mở mang tính chiến thuật. Nước nào dẫn tới Open Ruy Lopez?",
+      "acceptedMoves": [
+        "Nxe4"
+      ],
+      "preferredMove": "Nxe4",
+      "hintLevels": [
+        "Mã f6 đang tấn công gần trung tâm.",
+        "Tính nước mã bắt tốt e4, rồi kiểm tra phản ứng trung tâm của Trắng."
+      ],
+      "feedback": {
+        "Nxe4": "Đúng. ...Nxe4 mở Open Ruy Lopez. Tiếp theo cần tính toán chính xác và phát triển quân."
+      },
+      "wrongMoveFeedback": {
+        "Be7": "...Be7 là lựa chọn tốt cho kế hoạch kín, nhưng không mở Open Ruy Lopez."
+      },
+      "followUp": "Tiếp tục với phản ứng trung tâm của Trắng và cách Đen duy trì hoạt động quân.",
+      "difficulty": "medium"
+    }
+  ],
+  "completion": {
+    "minimumAccuracy": 0.8,
+    "reviewMistakes": true,
+    "requiredExercises": 2
+  },
+  "tags": [
+    "ruy-lopez",
+    "black",
+    "closed-variation",
+    "open-variation",
+    "counterplay"
+  ]
+}
