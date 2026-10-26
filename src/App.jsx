@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Chess } from 'chess.js';
-import { analyse, bestMove, bestMoveDetailed } from './services/stockfish';
+import { analyse, bestMoveDetailed } from './services/stockfish';
 import './styles.css';
 import AITutor from './components/AITutor';
+import OpeningLessons from './components/OpeningLessons';
 
 const FILES = ['a','b','c','d','e','f','g','h'];
 const PIECES = [
@@ -55,28 +56,6 @@ function gameToEditorPieces(game) {
       if (piece) pieces[square] = piece.color === 'w' ? piece.type.toUpperCase() : piece.type;
     }
   }
-  return pieces;
-}
-
-function placementToPieces(placement) {
-  const ranks = placement.split('/');
-  if (ranks.length !== 8) throw new Error('FEN cần có đúng 8 hàng.');
-  const pieces = {};
-  ranks.forEach((row, rowIndex) => {
-    let file = 0;
-    for (const ch of row) {
-      if (/^[1-8]$/.test(ch)) {
-        file += Number(ch);
-      } else if (/^[prnbqkPRNBQK]$/.test(ch)) {
-        if (file >= 8) throw new Error('Hàng FEN có quá 8 ô.');
-        pieces[FILES[file] + (8 - rowIndex)] = ch;
-        file++;
-      } else {
-        throw new Error('Ký tự không hợp lệ trong FEN: ' + ch);
-      }
-    }
-    if (file !== 8) throw new Error('Mỗi hàng FEN phải có đúng 8 ô.');
-  });
   return pieces;
 }
 
@@ -259,7 +238,7 @@ function App(){
   <div className="settingsRow"><label>Màu của bạn <select value={humanColor} onChange={e=>setHumanColor(e.target.value)}><option value="w">Trắng</option><option value="b">Đen</option></select></label><div className="openingControl"><button className="openingToggle" aria-expanded={showOpenings} onClick={()=>setShowOpenings(v=>!v)}>Khai cuộc: {OPENINGS.find(item=>item.id===opening)?.label || 'Stockfish tự tính'} <span aria-hidden="true">{showOpenings?'▴':'▾'}</span></button>{showOpenings&&<div className="openingMenu" role="group" aria-label="Chọn khai cuộc">{OPENINGS.map(item=><button key={item.id} className={opening===item.id?'openingOption active':'openingOption'} onClick={()=>{setOpening(item.id);setShowOpenings(false);setStatus(item.id==='stockfish'?'Chế độ Stockfish tự tính.':'Đã chọn '+item.label+' — chỉ theo sách khi vị trí phù hợp.');}}>{item.label}{opening===item.id?' ✓':''}</button>)}</div>}</div><label>Độ khó Stockfish: <b>{skill}/20</b><input type="range" min="0" max="20" value={skill} onChange={e=>setSkill(Number(e.target.value))}/></label><button onClick={()=>setFlipped(v=>!v)}>🔄 Lật bàn</button></div>
   <div className="evalAndBoard"><div className="evalBar" role="img" aria-label={'Đánh giá: '+(evalCp/100).toFixed(1)}><div className="evalBlack" style={{height:(100-Math.max(0,Math.min(100,50+50*Math.tanh(evalCp/400))))+'%'}}></div><div className="evalWhite" style={{height:Math.max(0,Math.min(100,50+50*Math.tanh(evalCp/400)))+'%'}}></div><span className="evalLabel">{evalMate!==null?(evalMate>0?'+M':'-M')+Math.abs(evalMate):(evalCp/100>0?'+':'')+(evalCp/100).toFixed(1)}</span></div><Board game={game} selected={selected} targets={targets} flipped={flipped} editorMode={editorMode} editorSquare={editorSquare} editorPieces={editorPieces} coachHint={coachHint} onSquare={onSquare}/></div>
   <div className="controls"><button onClick={analysePosition} disabled={thinking}>🧠 Phân tích vị trí</button><span>{best&&'Nước tốt nhất: '+best}</span></div>{error&&<p className="error">{error}</p>}{feedback&&<div className="moveFeedback" role="status"><strong>⚠️ Gợi ý sau nước đi</strong><p>{feedback}</p><button onClick={()=>setFeedback('')}>Đã hiểu</button></div>}<div className="trainingOptions"><label><input type="checkbox" checked={autoWarn} onChange={e=>setAutoWarn(e.target.checked)}/> Nhắc khi nước đi có thể là sai lầm</label><small>Phân tích nhanh tại chỗ; ngưỡng cảnh báo khoảng 1 tốt và có thể bỏ sót lỗi chiến thuật sâu.</small></div>
-  <section className="studyPanel"><h2>{studyTab==='learn'?'Học khai cuộc':studyTab==='review'?'Lưu và xem lại ván':'Lưu bài học'}</h2>{studyTab==='learn'?<><p>Chọn khai cuộc ở phía trên, rồi bấm gợi ý để biết nước nên đi cho màu quân của bro. Nếu đối thủ đi lệch biến mẫu, trợ lý sẽ phân tích thế cờ thực tế thay vì ép đi theo sách.</p><div className="buttonRow"><button onClick={suggestOpeningMove} disabled={thinking||game.isGameOver()}>🧭 Gợi ý nước cho tôi</button><button onClick={analysePosition} disabled={thinking||game.isGameOver()}>Phân tích vị trí</button></div>{coachMessage&&<div className="coachPanel" role="status"><strong>Trợ lý khai cuộc</strong><p>{coachMessage}</p></div>}</>:<><p>PGN lưu ván cờ tiêu chuẩn. JSON lưu thêm nước đi, khai cuộc đã chọn và ghi chú gần nhất.</p><div className="buttonRow"><button onClick={exportPgn}>⬇ Xuất PGN</button><button onClick={exportStudyJson}>⬇ Xuất JSON bài học</button><label className="fileImport">⬆ Nhập PGN / JSON<input type="file" accept=".pgn,.json,.txt" onChange={e=>{importGameFile(e.target.files?.[0]);e.target.value='';}}/></label><button onClick={analysePosition} disabled={thinking}>Phân tích vị trí hiện tại</button></div>{reviewInfo&&<p className="reviewInfo">{reviewInfo}</p>}</>}</section>
+  <section className="studyPanel"><h2>{studyTab==='learn'?'Học khai cuộc':studyTab==='review'?'Lưu và xem lại ván':'Lưu bài học'}</h2>{studyTab==='learn'?<><p>Học theo bài có sẵn không cần API key; phần gợi ý bàn cờ vẫn dùng Stockfish khi cần phân tích vị trí thực tế.</p><OpeningLessons /><div className="buttonRow"><button onClick={suggestOpeningMove} disabled={thinking||game.isGameOver()}>🧭 Gợi ý nước cho tôi</button><button onClick={analysePosition} disabled={thinking||game.isGameOver()}>Phân tích vị trí</button></div>{coachMessage&&<div className="coachPanel" role="status"><strong>Trợ lý khai cuộc</strong><p>{coachMessage}</p></div>}</>:<><p>PGN lưu ván cờ tiêu chuẩn. JSON lưu thêm nước đi, khai cuộc đã chọn và ghi chú gần nhất.</p><div className="buttonRow"><button onClick={exportPgn}>⬇ Xuất PGN</button><button onClick={exportStudyJson}>⬇ Xuất JSON bài học</button><label className="fileImport">⬆ Nhập PGN / JSON<input type="file" accept=".pgn,.json,.txt" onChange={e=>{importGameFile(e.target.files?.[0]);e.target.value='';}}/></label><button onClick={analysePosition} disabled={thinking}>Phân tích vị trí hiện tại</button></div>{reviewInfo&&<p className="reviewInfo">{reviewInfo}</p>}</>}</section>
   <section className="editor"><button className="editorToggle" onClick={()=>{if(!editorMode){setEditorPieces(gameToEditorPieces(game));setFenText(game.fen());setEditorMode(true);setEditorSquare(null);setEditorStatus('Bật chế độ xếp cờ: bấm quân muốn di chuyển rồi bấm ô đích. Chọn quân trong danh sách để đặt mới.');}else{setEditorMode(false);setEditorSquare(null);setEditorStatus('Đã thoát chế độ xếp cờ.');}}}>{editorMode?'↩️ Thoát xếp cờ':'🛠️ Chế độ xếp cờ'}</button>
   {editorMode&&<div className="editorTools"><p>Di chuyển: bấm quân trên bàn cờ rồi bấm ô đích bất kỳ. Nếu ô đích có quân, quân đó sẽ bị thay thế. Muốn đặt quân mới, chọn ô rồi chọn quân bên dưới. Bạn cũng có thể sửa FEN trực tiếp.</p><label>Quân muốn đặt / thay<select value={pieceChoice} onChange={e=>setPieceChoice(e.target.value)}>{PIECES.map(([label,code])=><option key={label} value={code}>{label}</option>)}</select></label><div className="buttonRow"><button onClick={placePiece}>♟ Đặt / thay quân</button><button onClick={clearBoard}>🧹 Xóa hết (FEN)</button><button onClick={resetBoard}>♟ Vị trí ban đầu</button></div><label>FEN của vị trí hiện tại<textarea rows="2" value={fenText} onChange={e=>setFenText(e.target.value)}/></label><div className="buttonRow"><button onClick={validateFen}>🔎 Kiểm tra FEN</button><button onClick={applyFen}>📋 Áp dụng FEN</button><button className="primary" onClick={startFromFen}>▶️ Xếp cờ → Chơi</button></div>{editorStatus&&<p>{editorStatus}</p>}</div>}</section>
   </div></section><div className={studyTab==='ai'?'aiTutorView':'aiTutorView aiTutorViewHidden'}><AITutor game={game} humanColor={humanColor} opening={OPENINGS.find(item=>item.id===opening)?.label || 'Stockfish tự tính'} skill={skill}/></div></main>;
