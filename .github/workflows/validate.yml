@@ -26,3 +26,11 @@ jobs:
         run: node scripts/validate-opening-lessons.mjs
       - name: Build
         run: npm run build
+      - name: Upload pre-merge build artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: chess-web-pr-preview
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
