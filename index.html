@@ -31,6 +31,54 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Keep useful diagnostics visible even if React fails before rendering.
+      (() => {
+        const root = document.getElementById('root');
+        const startedAt = new Date().toISOString();
+        let panel;
+        const showError = (title, detail) => {
+          console.error('[Chess Web diagnostic]', title, detail || '');
+          if (!root) return;
+          if (!panel) {
+            panel = document.createElement('section');
+            panel.setAttribute('role', 'alert');
+            panel.style.cssText = 'margin:24px auto;max-width:900px;padding:20px;border:1px solid #b91c1c;border-radius:10px;background:#1f1113;color:#fee2e2;font:14px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere';
+            root.replaceChildren(panel);
+          }
+          const heading = document.createElement('h2');
+          heading.style.cssText = 'font:600 18px/1.4 system-ui,sans-serif;margin:0 0 12px';
+          heading.textContent = 'Chess Web không khởi động được';
+          const summary = document.createElement('p');
+          summary.style.cssText = 'font:14px/1.5 system-ui,sans-serif;margin:0 0 12px';
+          summary.textContent = 'Đã ghi nhận lỗi bên dưới. Chụp màn hình hoặc sao chép nội dung này để tìm nguyên nhân.';
+          const details = document.createElement('pre');
+          details.style.cssText = 'white-space:pre-wrap;overflow-wrap:anywhere;margin:0';
+          details.textContent = 'Thời điểm: ' + startedAt + '\nLỗi: ' + title + (detail ? '\nChi tiết: ' + detail : '') + '\nURL: ' + location.href + '\nUser agent: ' + navigator.userAgent;
+          panel.replaceChildren(heading, summary, details);
+        };
+        window.addEventListener('error', (event) => {
+          const target = event.target;
+          if (target && target !== window) {
+            const source = target.src || target.href || target.tagName || 'unknown resource';
+            if (target.tagName === 'SCRIPT' || String(source).includes('.jsx')) {
+              showError('Không tải được script/module', source + (event.message ? ' — ' + event.message : '') + '. Kiểm tra GitHub Pages build/artifact và Content-Type.');
+            }
+            return;
+          }
+          showError(event.message || 'JavaScript runtime error', (event.filename || '') + ':' + (event.lineno || '') + ':' + (event.colno || '') + (event.error && event.error.stack ? '\n' + event.error.stack : ''));
+        }, true);
+        window.addEventListener('unhandledrejection', (event) => {
+          const reason = event.reason;
+          showError('Unhandled promise rejection', reason && (reason.stack || reason.message) ? (reason.stack || reason.message) : String(reason));
+        });
+        window.setTimeout(() => {
+          if (root && !root.hasChildNodes() && !panel) {
+            showError('Ứng dụng chưa render sau 8 giây', 'React chưa tạo nội dung trong #root. Có thể module không tải được, import bị lỗi hoặc ứng dụng dừng trước khi render.');
+          }
+        }, 8000);
+      })();
+    </script>
     <script type="module" src="./src/main.jsx"></script>
   </body>
 </html>
