@@ -39,6 +39,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Install Chromium for browser smoke tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify Stockfish in a real browser
+        run: npm run test:browser
+
       - name: Verify built Pages artifact
         run: node scripts/verify-build.mjs
 
