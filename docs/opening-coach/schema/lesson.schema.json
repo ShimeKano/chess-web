@@ -1,0 +1,321 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ShimeKano/chess-web/blob/main/docs/opening-coach/schema/lesson.schema.json",
+  "title": "Chess Web Opening Coach Lesson",
+  "description": "Version 1 schema for static, branch-aware chess opening lessons.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "title",
+    "language",
+    "opening",
+    "level",
+    "estimatedMinutes",
+    "startFen",
+    "introLine",
+    "objectives",
+    "sections",
+    "branches",
+    "exercises",
+    "completion",
+    "tags"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "language": {
+      "const": "vi"
+    },
+    "opening": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "eco",
+        "sideToTrain"
+      ],
+      "properties": {
+        "name": {
+          "const": "Ruy Lopez"
+        },
+        "eco": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-E][0-9]{2}$"
+          },
+          "uniqueItems": true
+        },
+        "sideToTrain": {
+          "enum": [
+            "white",
+            "black",
+            "both"
+          ]
+        }
+      }
+    },
+    "level": {
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ]
+    },
+    "estimatedMinutes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 180
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "startFen": {
+      "type": "string",
+      "minLength": 20
+    },
+    "introLine": {
+      "type": "array",
+      "description": "SAN moves replayed from startFen to reach the lesson's opening position.",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      }
+    },
+    "objectives": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "heading",
+          "body"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "heading": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "keyPoints": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "branches": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/branchNode"
+      }
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/exercise"
+      }
+    },
+    "completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimumAccuracy",
+        "reviewMistakes"
+      ],
+      "properties": {
+        "minimumAccuracy": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reviewMistakes": {
+          "type": "boolean"
+        },
+        "requiredExercises": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "url",
+          "usage"
+        ],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "usage": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "branchNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "san",
+        "explanation"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "san": {
+          "type": "string",
+          "minLength": 2
+        },
+        "explanation": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sideNote": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/branchNode"
+          }
+        }
+      }
+    },
+    "exercise": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "positionAfter",
+        "prompt",
+        "acceptedMoves",
+        "preferredMove",
+        "hintLevels",
+        "feedback"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "choose_move",
+            "find_plan",
+            "tactical",
+            "defensive_resource",
+            "branch_recognition"
+          ]
+        },
+        "positionAfter": {
+          "type": "array",
+          "description": "SAN sequence replayed from startFen; may be empty for the initial position.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "prompt": {
+          "type": "string"
+        },
+        "acceptedMoves": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "preferredMove": {
+          "type": "string"
+        },
+        "hintLevels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "feedback": {
+          "type": "object",
+          "description": "Keys are accepted SAN moves; values explain the strategic idea and trade-off.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "wrongMoveFeedback": {
+          "type": "object",
+          "description": "Optional curated feedback for known mistakes, keyed by SAN.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "followUp": {
+          "type": "string"
+        },
+        "difficulty": {
+          "enum": [
+            "easy",
+            "medium",
+            "hard"
+          ]
+        }
+      }
+    }
+  }
+}
