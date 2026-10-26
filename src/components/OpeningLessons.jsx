@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Chess } from 'chess.js';
 import foundations from '../../docs/opening-coach/lessons/ruy-lopez-01-foundations.json';
 import whiteMorphy from '../../docs/opening-coach/lessons/ruy-lopez-02-white-morphy.json';
@@ -6,34 +6,41 @@ import blackAfterCastling from '../../docs/opening-coach/lessons/ruy-lopez-03-bl
 
 const LESSONS = [foundations, whiteMorphy, blackAfterCastling];
 
-function exercisePosition(lesson, exercise) {
+function buildPosition(lesson, exercise) {
   const game = new Chess(lesson.startFen);
   for (const san of exercise.positionAfter) {
-    if (!game.move(san)) throw new Error('Nước đi không hợp lệ trong bài: ' + san);
+    const move = game.move(san);
+    if (!move) throw new Error('Nước đi không hợp lệ trong bài: ' + san);
   }
   return game;
 }
 
-export default function OpeningLessons() {
+export default function OpeningLessons({ onPositionChange }) {
   const [lessonIndex, setLessonIndex] = useState(0);
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [hintIndex, setHintIndex] = useState(0);
   const [answer, setAnswer] = useState('');
   const lesson = LESSONS[lessonIndex];
   const exercise = lesson.exercises[exerciseIndex];
-  const position = useMemo(() => exercisePosition(lesson, exercise), [lesson, exercise]);
+  const position = useMemo(() => buildPosition(lesson, exercise), [lesson, exercise]);
   const legalMoves = position.moves();
-  const options = [...new Set([
-    ...lesson.branches.map(branch => branch.san),
-    ...exercise.acceptedMoves,
-    ...Object.keys(exercise.wrongMoveFeedback || {})
-  ])].filter(san => legalMoves.includes(san));
-  const isCorrect = answer && exercise.acceptedMoves.includes(answer);
+  const distractors = Object.keys(exercise.wrongMoveFeedback || {});
+  const options = [...new Set([...exercise.acceptedMoves, ...distractors, ...legalMoves.slice(0, 4)])]
+    .filter(san => legalMoves.includes(san))
+    .sort((a, b) => a.localeCompare(b));
+  const isCorrect = Boolean(answer && exercise.acceptedMoves.includes(answer));
   const feedback = answer
-    ? (exercise.feedback?.[answer] || exercise.wrongMoveFeedback?.[answer] || (isCorrect
-      ? 'Đúng. Hãy chú ý kế hoạch phía sau nước đi này.'
-      : 'Nước này hợp lệ nhưng chưa khớp mục tiêu của câu hỏi. Đọc lại gợi ý và thử phương án khác.'))
+    ? (exercise.feedback?.[answer] || exercise.wrongMoveFeedback?.[answer] ||
+      (isCorrect ? 'Chính xác. Hãy chú ý kế hoạch phía sau nước đi này.' : 'Nước này hợp lệ nhưng chưa khớp mục tiêu của câu hỏi. Đọc lại gợi ý và thử phương án khác.'))
     : '';
+  const moveList = exercise.positionAfter.map((san, index) => ({
+    san,
+    prefix: index % 2 === 0 ? Math.floor(index / 2) + 1 + '.' : ''
+  }));
+
+  useEffect(() => {
+    onPositionChange?.(position.fen());
+  }, [position, onPositionChange]);
 
   function changeLesson(nextIndex) {
     setLessonIndex(nextIndex);
@@ -51,8 +58,8 @@ export default function OpeningLessons() {
   return <div className="openingLessons">
     <div className="lessonHeading">
       <div>
-        <strong>Bài học Ruy López</strong>
-        <p>{LESSONS.length} bài mẫu · không cần API key · nước đi được kiểm tra bằng chess.js</p>
+        <strong>Ruy López · lộ trình học</strong>
+        <p>{lessonIndex + 1}/{LESSONS.length} bài · {lesson.estimatedMinutes || '—'} phút · không cần API</p>
       </div>
       <label>Bài học
         <select value={lessonIndex} onChange={event => changeLesson(Number(event.target.value))}>
@@ -64,6 +71,10 @@ export default function OpeningLessons() {
       <strong>Mục tiêu</strong>
       <ul>{lesson.objectives.map(item => <li key={item}>{item}</li>)}</ul>
     </div>
+    <div className="lessonMoveLine" aria-label="Các nước dẫn đến vị trí này">
+      <span>Vị trí trong bài:</span>
+      {moveList.map((move, index) => <span className="lessonSan" key={move.san + index}>{move.prefix && <b>{move.prefix}</b>} {move.san}</span>)}
+    </div>
     {lesson.sections.map(section => <article className="lessonSection" key={section.id}>
       <h3>{section.heading}</h3>
       <p>{section.body}</p>
@@ -71,29 +82,29 @@ export default function OpeningLessons() {
     </article>)}
     <div className="lessonExercise">
       <div className="lessonExerciseTop">
-        <strong>Thực hành {exerciseIndex + 1}/{lesson.exercises.length}</strong>
+        <strong>Câu hỏi {exerciseIndex + 1}/{lesson.exercises.length}</strong>
         <span>{exercise.difficulty || 'Luyện tập'}</span>
       </div>
-      <p>{exercise.prompt}</p>
-      <p className="lessonPosition"><span>Vị trí trước khi đi:</span> {exercise.positionAfter.map((san, index) => <React.Fragment key={san + index}>{index % 2 === 0 && <b>{Math.floor(index / 2) + 1}{index % 2 === 0 ? '.' : ''} </b>}{san}{' '}</React.Fragment>)}</p>
+      <p className="lessonPrompt">{exercise.prompt}</p>
+      <p className="lessonAnswerInstruction">Chọn một nước đi bên dưới để trả lời:</p>
       <div className="lessonMoveOptions">
-        {options.map(san => <button key={san} className={answer === san ? (exercise.acceptedMoves.includes(san) ? 'correct' : 'chosen') : ''} onClick={() => setAnswer(san)}>{san}</button>)}
+        {options.map(san => <button type="button" key={san} className={answer === san ? (isCorrect ? 'correct' : 'chosen') : ''} aria-pressed={answer === san} onClick={() => setAnswer(san)}>{san}</button>)}
       </div>
       {feedback && <div className={'lessonFeedback ' + (isCorrect ? 'success' : 'retry')} role="status">
-        <strong>{isCorrect ? 'Chính xác' : 'Thử lại / xem ý tưởng'}</strong>
+        <strong>{isCorrect ? 'Đúng rồi' : 'Chưa đúng với mục tiêu câu hỏi'}</strong>
         <p>{feedback}</p>
       </div>}
-      {hintIndex < exercise.hintLevels.length && <button className="lessonHint" onClick={() => setHintIndex(value => Math.min(value + 1, exercise.hintLevels.length))}>Gợi ý {hintIndex + 1}/{exercise.hintLevels.length}</button>}
-      {hintIndex > 0 && <p className="lessonHintText">{exercise.hintLevels[hintIndex - 1]}</p>}
+      {hintIndex < (exercise.hints || []).length && <button type="button" className="lessonHint" onClick={() => setHintIndex(value => Math.min(value + 1, (exercise.hints || []).length))}>Xem gợi ý {hintIndex + 1}/{(exercise.hints || []).length}</button>}
+      {hintIndex > 0 && <p className="lessonHintText">{exercise.hints[hintIndex - 1]}</p>}
       {exercise.followUp && <p className="lessonFollowUp">{exercise.followUp}</p>}
       <div className="lessonNavigation">
-        <button disabled={exerciseIndex === 0} onClick={() => changeExercise(exerciseIndex - 1)}>Bài tập trước</button>
-        <button disabled={exerciseIndex >= lesson.exercises.length - 1} onClick={() => changeExercise(exerciseIndex + 1)}>Bài tập tiếp</button>
+        <button type="button" disabled={exerciseIndex === 0} onClick={() => changeExercise(exerciseIndex - 1)}>Câu trước</button>
+        <button type="button" disabled={exerciseIndex >= lesson.exercises.length - 1} onClick={() => changeExercise(exerciseIndex + 1)}>Câu tiếp</button>
       </div>
     </div>
     <div className="lessonNavigation lessonCourseNavigation">
-      <button disabled={lessonIndex === 0} onClick={() => changeLesson(lessonIndex - 1)}>Bài học trước</button>
-      <button disabled={lessonIndex >= LESSONS.length - 1} onClick={() => changeLesson(lessonIndex + 1)}>Bài học tiếp</button>
+      <button type="button" disabled={lessonIndex === 0} onClick={() => changeLesson(lessonIndex - 1)}>Bài trước</button>
+      <button type="button" disabled={lessonIndex >= LESSONS.length - 1} onClick={() => changeLesson(lessonIndex + 1)}>Bài tiếp</button>
     </div>
   </div>;
 }

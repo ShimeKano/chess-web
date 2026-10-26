@@ -72,13 +72,6 @@
 @media(max-width:800px){.gamePanel{padding:10px}.evalAndBoard{width:100%;gap:5px}.evalBar{flex-basis:20px}.evalLabel{font-size:9px}.studyTabs button{min-width:0;padding:10px 7px;font-size:13px}.settingsRow{flex-direction:column;align-items:stretch}.settingsRow label{width:100%}.openingControl{width:100%}}
 
 
-/* Opening coach highlights the recommended move for the player's color. */
-.square.coachFrom{box-shadow:inset 0 0 0 4px #38bdf8!important;}
-.square.coachTo{box-shadow:inset 0 0 0 5px #22c55e!important;}
-.coachPanel{margin-top:12px;padding:14px;border:1px solid #2563eb;background:#111f36;border-radius:12px;color:#dbeafe;line-height:1.55}
-.coachPanel strong{display:block;margin-bottom:5px;color:#bfdbfe}
-.coachPanel p{margin:0}
-
 
 /* Static opening lessons: readable without an external AI service. */
 .openingLessons{display:grid;gap:14px;margin-top:18px;padding:16px;border:1px solid #343a46;border-radius:14px;background:#171a21}
@@ -111,3 +104,40 @@
 .lessonNavigation button:disabled{opacity:.4;cursor:not-allowed}
 .lessonCourseNavigation{border-top:1px solid #343a46;padding-top:12px}
 @media(max-width:600px){.openingLessons{padding:10px}.lessonHeading{display:grid}.lessonHeading label{width:100%}.lessonExerciseTop{align-items:flex-start}}
+
+
+/* Learning workspace: compact board and lesson panel side by side. */
+@media(min-width:1000px){
+  .gamePanel{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(330px,.92fr);column-gap:18px;align-items:start}
+  .gameTop,.settingsRow,.editor{grid-column:1/-1}
+  .evalAndBoard{grid-column:1;grid-row:3;width:100%;max-width:560px}
+  .controls{grid-column:1;grid-row:4}
+  .gamePanel>.error{grid-column:1;grid-row:5}
+  .moveFeedback{grid-column:1;grid-row:6}
+  .trainingOptions{grid-column:1;grid-row:7}
+  .studyPanel{grid-column:2;grid-row:3 / span 5;margin-top:0;max-height:calc(100vh - 180px);overflow:auto}
+  .boardWrap{width:100%;max-width:560px}
+}
+.lessonBoardNote{padding:10px 12px;border-radius:9px;background:#172033;border:1px solid #2b3b53;color:#cbd5e1!important}
+.openingLessons{gap:12px;margin-top:12px;padding:12px}
+.lessonHeading p{margin:5px 0 0;font-size:.82rem}
+.lessonMoveLine{display:flex;flex-wrap:wrap;align-items:center;gap:5px;color:#9eacbf;font-size:.82rem}
+.lessonSan{padding:4px 6px;border-radius:5px;background:#111827;color:#e5e7eb}
+.lessonSan b{color:#93c5fd}
+.lessonPrompt{font-size:1rem;color:#f3f4f6!important}
+.lessonAnswerInstruction{font-size:.86rem;margin-bottom:8px!important}
+.lessonMoveOptions button{min-width:58px;justify-content:center}
+.lessonMoveOptions button.correct{background:#1f4934;border-color:#4d9b6e;color:#dcfce7}
+.lessonMoveOptions button.chosen{background:#3b3023;border-color:#a67a40;color:#fef3c7}
+.lessonNavigation button{justify-content:center}
+.studyTabs{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px)}
+@media(max-width:999px){
+  .gamePanel{display:flex;flex-direction:column}
+  .evalAndBoard{width:100%;max-width:680px}
+  .studyPanel{width:100%;max-height:none;overflow:visible}
+}
+@media(max-width:600px){
+  main{padding:10px}
+  .studyTabs button{flex:1 1 30%;font-size:.82rem}
+  .lessonMoveOptions button{min-width:50px;padding:8px}
+}
