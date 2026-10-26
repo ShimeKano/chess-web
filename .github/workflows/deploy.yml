@@ -31,13 +31,16 @@ jobs:
           node-version: 24
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Test chess rules and lesson data
         run: npm test
 
       - name: Build
         run: npm run build
+
+      - name: Add GitHub Pages marker
+        run: touch dist/.nojekyll
 
       - name: Install Chromium for browser smoke tests
         run: npx playwright install --with-deps chromium
@@ -47,6 +50,9 @@ jobs:
 
       - name: Verify built Pages artifact
         run: node scripts/verify-build.mjs
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
