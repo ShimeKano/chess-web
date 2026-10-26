@@ -5,7 +5,7 @@ const dist = resolve(process.cwd(), 'dist');
 const htmlPath = resolve(dist, 'index.html');
 
 function fail(message) {
-  console.error(`[verify-build] FAIL: ${message}`);
+  console.error('[verify-build] FAIL: ' + message);
   process.exitCode = 1;
 }
 
@@ -38,11 +38,11 @@ for (const source of moduleScripts) {
   const rel = relative(dist, assetPath);
 
   if (rel.startsWith('..') || isAbsolute(rel)) {
-    fail(`Module script points outside dist/: ${source}`);
+    fail('Module script points outside dist/: ' + source);
     continue;
   }
   if (!existsSync(assetPath) || !statSync(assetPath).isFile()) {
-    fail(`Module script asset does not exist in build output: ${source}`);
+    fail('Module script asset does not exist in build output: ' + source + ' -> ' + assetPath);
   }
 }
 
