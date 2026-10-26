@@ -16,19 +16,7 @@ if (!existsSync(htmlPath)) {
 
 const html = readFileSync(htmlPath, 'utf8');
 
-for (const engineFile of [
-  'stockfish/stockfish-19-lite-single.js',
-  'stockfish/stockfish-19-lite-single.wasm'
-]) {
-  const enginePath = resolve(dist, engineFile);
-  if (!existsSync(enginePath) || !statSync(enginePath).isFile()) {
-    fail('Required Stockfish runtime asset is missing from dist/: ' + engineFile);
-  } else if (statSync(enginePath).size === 0) {
-    fail('Required Stockfish runtime asset is empty in dist/: ' + engineFile);
-  }
-}
-
-
+// A production build must reference compiled bundles, never source JSX.
 if (/src\s*=\s*["'][^"']*src\/main\.jsx/i.test(html)) {
   fail('Built index.html still references src/main.jsx instead of a compiled bundle.');
 }
@@ -61,6 +49,18 @@ for (const source of moduleScripts) {
 
 if (!/assets\/[^"']+\.js(?:[?#][^"']*)?/i.test(html)) {
   fail('Built index.html does not reference a compiled JS file under assets/.');
+}
+
+for (const engineFile of [
+  'stockfish/stockfish-19-lite-single.js',
+  'stockfish/stockfish-19-lite-single.wasm'
+]) {
+  const enginePath = resolve(dist, engineFile);
+  if (!existsSync(enginePath) || !statSync(enginePath).isFile()) {
+    fail('Required Stockfish runtime asset is missing from dist/: ' + engineFile);
+  } else if (statSync(enginePath).size === 0) {
+    fail('Required Stockfish runtime asset is empty in dist/: ' + engineFile);
+  }
 }
 
 if (process.exitCode) {
