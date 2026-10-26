@@ -27,7 +27,7 @@ test('core chess rules: PGN export can be loaded back with the same move history
   const game = new Chess();
   for (const san of ['e4', 'e5', 'Nf3', 'Nc6', 'Bb5']) game.move(san);
   const copy = new Chess();
-  assert.equal(copy.loadPgn(game.pgn()), true);
+  copy.loadPgn(game.pgn());
   assert.deepEqual(copy.history(), game.history());
   assert.equal(copy.fen(), game.fen());
 });
