@@ -141,3 +141,25 @@
   .studyTabs button{flex:1 1 30%;font-size:.82rem}
   .lessonMoveOptions button{min-width:50px;padding:8px}
 }
+
+
+/* Live move history and scalable board workspace */
+.boardTools{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;width:100%;max-width:1000px;margin:0 auto 8px;color:#cbd5e1;font-size:13px}
+.boardTools>div{display:flex;align-items:center;gap:6px}
+.boardTools button{border:1px solid #374151;background:#172033;color:#e5e7eb;border-radius:7px;padding:5px 9px}
+.boardTools button:disabled{opacity:.35;cursor:not-allowed}
+.evalAndBoard{max-width:1000px;align-items:stretch}
+.evalAndBoard .boardWrap{flex:1 1 0;max-width:none;min-width:0;width:auto}
+.evalAndBoard .board{width:100%;max-width:none}
+.evalAndBoard[style*="--board-zoom"] .boardWrap{flex-grow:var(--board-zoom);flex-basis:0;min-width:0}
+.moveLog{display:flex;flex-direction:column;flex:0 0 clamp(145px,22vw,235px);min-width:0;max-height:min(72vw, min(720px, 82vh));height:auto;align-self:stretch;padding:0;border:1px solid #2d3b50;border-radius:10px;background:#0b1220;overflow:hidden}
+.moveLogHeader{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 11px;border-bottom:1px solid #263047;color:#e5e7eb;font-size:13px}
+.moveLogHeader span{font-size:11px;color:#94a3b8}
+.moveLogScroll{overflow-y:auto;overscroll-behavior:contain;min-height:0;scrollbar-width:thin;scrollbar-color:#475569 #0b1220}
+.moveLogRow{display:grid;grid-template-columns:26px minmax(0,1fr) minmax(0,1fr);align-items:center;gap:3px;padding:6px 7px;font-variant-numeric:tabular-nums;font-size:13px;border-bottom:1px solid #172033}
+.moveLogRow:nth-child(even){background:#101827}
+.moveNumber{color:#64748b;font-size:11px}
+.moveLogRow>span:not(.moveNumber){padding:3px 4px;border-radius:4px;overflow-wrap:anywhere}
+.moveLogRow .latestMove{background:#314158;color:#fff;font-weight:750}
+@media(min-width:1000px){.gamePanel{grid-template-columns:minmax(0,1fr);}.evalAndBoard{grid-column:1/-1;grid-row:auto;width:100%;}.boardTools{grid-column:1/-1;}.studyPanel{grid-column:1/-1;grid-row:auto;max-height:none;overflow:visible}.controls,.gamePanel>.error,.moveFeedback,.trainingOptions{grid-column:1/-1;grid-row:auto}}
+@media(max-width:700px){.evalAndBoard{flex-wrap:wrap;align-items:flex-start}.evalAndBoard .boardWrap{flex:1 1 calc(100% - 30px);}.moveLog{flex:1 1 100%;max-height:190px;height:190px}.evalBar{min-height:100px;max-height:none}.boardTools{margin-top:4px}.boardTools>div{gap:4px}.boardTools button{padding:6px 8px}}
