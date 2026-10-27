@@ -195,3 +195,19 @@
  .boardFullscreen .evalAndBoard .boardWrap{flex:0 0 auto;height:min(64vh,calc(100vw - 24px));width:min(64vh,calc(100vw - 24px))}
  .boardFullscreen .evalAndBoard .moveLog{flex:0 0 190px;height:100%;max-height:none}
 }
+
+
+/* Keep the exit-fullscreen control reachable in the unused corner */
+.boardFullscreen .boardTools>div>button:first-child{
+  position:fixed;
+  right:24px;
+  bottom:24px;
+  z-index:1101;
+  box-shadow:0 8px 28px #0009;
+}
+@media(max-width:700px){
+  .boardFullscreen .boardTools>div>button:first-child{
+    right:12px;
+    bottom:12px;
+  }
+}
