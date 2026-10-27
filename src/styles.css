@@ -163,3 +163,35 @@
 .moveLogRow .latestMove{background:#314158;color:#fff;font-weight:750}
 @media(min-width:1000px){.gamePanel{grid-template-columns:minmax(0,1fr);}.evalAndBoard{grid-column:1/-1;grid-row:auto;width:100%;}.boardTools{grid-column:1/-1;}.studyPanel{grid-column:1/-1;grid-row:auto;max-height:none;overflow:visible}.controls,.gamePanel>.error,.moveFeedback,.trainingOptions{grid-column:1/-1;grid-row:auto}}
 @media(max-width:700px){.evalAndBoard{flex-wrap:wrap;align-items:flex-start}.evalAndBoard .boardWrap{flex:1 1 calc(100% - 30px);}.moveLog{flex:1 1 100%;max-height:190px;height:190px}.evalBar{min-height:100px;max-height:none}.boardTools{margin-top:4px}.boardTools>div{gap:4px}.boardTools button{padding:6px 8px}}
+
+
+/* Full-screen board and pinned hint area */
+.boardWorkspace{width:100%;min-width:0}
+.boardWorkspace .boardTools{max-width:none}
+.moveLog{height:min(78vh,760px);max-height:min(78vh,760px)}
+.suggestionPanel{position:relative;flex:0 0 auto;padding:12px;border-bottom:1px solid #263047;background:#111b2b}
+.suggestionPanel>strong{display:block;font-size:14px;letter-spacing:.02em;margin-bottom:8px}
+.suggestionOutput{min-height:46px;max-height:140px;overflow-y:auto;overflow-wrap:anywhere;color:#dbeafe;background:#0b1220;border:1px solid #263047;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-bottom:9px}
+.suggestionPanel button{border:1px solid #374151;background:#1d3554;color:#e5e7eb;border-radius:7px;padding:6px 10px}
+.boardFullscreen{position:fixed!important;inset:0;z-index:1000;background:#080d17;padding:14px 18px 18px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.boardFullscreen .boardTools{flex:0 0 auto}
+.boardFullscreen .evalAndBoard{width:100%;max-width:none;flex:1;min-height:0;display:flex;align-items:stretch;justify-content:center}
+.boardFullscreen .evalAndBoard .boardWrap{width:auto;max-width:none;max-height:calc(100vh - 115px);aspect-ratio:1;flex:0 1 auto}
+.boardFullscreen .evalAndBoard .boardColumn{height:100%;width:auto;aspect-ratio:1}
+.boardFullscreen .evalAndBoard .board{height:100%;width:auto;aspect-ratio:1}
+.boardFullscreen .evalAndBoard .moveLog{height:100%;max-height:calc(100vh - 115px);flex:0 0 clamp(210px,24vw,340px)}
+.boardFullscreen .evalAndBoard .evalBar{height:100%;min-height:0}
+.boardFullscreen .controls{display:none}
+.dialogBackdrop{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;padding:20px;background:#020617b8;backdrop-filter:blur(4px)}
+.warningDialog{width:min(480px,100%);padding:22px;border-radius:16px;border:1px solid #755633;background:#151c29;color:#e5e7eb;box-shadow:0 24px 80px #000b}
+.warningDialog h2{margin:0 0 12px;font-size:20px}
+.warningDialog p{line-height:1.6;color:#f3e8d0;overflow-wrap:anywhere}
+.dialogActions{display:flex;justify-content:flex-end;margin-top:18px}
+.dialogActions button{border:1px solid #705b3e;border-radius:9px;background:#3b3023;color:#fff;padding:9px 16px}
+@media(max-width:700px){
+ .moveLog{height:280px;max-height:280px}
+ .boardFullscreen{padding:8px}
+ .boardFullscreen .evalAndBoard{flex-wrap:nowrap;overflow:auto;align-items:stretch}
+ .boardFullscreen .evalAndBoard .boardWrap{flex:0 0 auto;height:min(64vh,calc(100vw - 24px));width:min(64vh,calc(100vw - 24px))}
+ .boardFullscreen .evalAndBoard .moveLog{flex:0 0 190px;height:100%;max-height:none}
+}
