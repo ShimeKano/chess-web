@@ -269,3 +269,225 @@ header p{font-size:13px}
  .evalBar{flex-basis:16px}
  .boardTools{align-items:flex-start;flex-direction:column}
 }
+
+
+/* Layout bug fix: keep the settings rail and board workspace in the same grid,
+   and prevent the board, evaluation bar, and move log from overflowing. */
+@media (min-width: 1000px) {
+  .gameLayout {
+    display: block;
+    max-width: none;
+    margin: 0;
+  }
+
+  .gamePanel {
+    display: grid;
+    grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+    column-gap: 18px;
+    row-gap: 14px;
+    align-items: start;
+  }
+
+  .gameTop {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .settingsRow {
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
+  }
+
+  .boardWorkspace {
+    grid-column: 2;
+    grid-row: 2;
+    min-width: 0;
+  }
+
+  .boardWorkspace .evalAndBoard {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .boardWorkspace .evalBar {
+    flex: 0 0 20px;
+    min-width: 0;
+  }
+
+  .boardWorkspace .evalAndBoard .boardWrap {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .boardWorkspace .evalAndBoard .boardColumn,
+  .boardWorkspace .evalAndBoard .board {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .boardWorkspace .evalAndBoard .moveLog {
+    flex: 0 1 250px;
+    width: 30%;
+    min-width: 0;
+    max-width: 280px;
+    height: auto;
+    max-height: min(72vh, 760px);
+  }
+
+  .boardWorkspace .moveLogScroll {
+    min-height: 120px;
+    max-height: calc(72vh - 190px);
+  }
+
+  .gamePanel > .controls,
+  .gamePanel > .error,
+  .gamePanel > .trainingOptions,
+  .gamePanel > .studyPanel,
+  .gamePanel > .editor,
+  .gamePanel > .moveFeedback {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    min-width: 0;
+  }
+
+  .gamePanel > .studyPanel {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+/* Tablet and mobile: stack controls above the board without horizontal clipping. */
+@media (max-width: 999px) {
+  .gameLayout {
+    display: block;
+    width: 100%;
+  }
+
+  .gamePanel {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+    padding: 12px;
+  }
+
+  .gameTop,
+  .settingsRow,
+  .boardWorkspace,
+  .gamePanel > .controls,
+  .gamePanel > .trainingOptions,
+  .gamePanel > .studyPanel,
+  .gamePanel > .editor {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .settingsRow {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .settingsRow label,
+  .openingControl,
+  .openingToggle {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .boardWorkspace {
+    padding: 10px;
+  }
+
+  .boardWorkspace .evalAndBoard {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    width: 100%;
+    max-width: 100%;
+    gap: 6px;
+  }
+
+  .boardWorkspace .evalBar {
+    grid-column: 1;
+    min-height: 0;
+  }
+
+  .boardWorkspace .evalAndBoard .boardWrap {
+    grid-column: 2;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .boardWorkspace .evalAndBoard .moveLog {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: 280px;
+    max-height: 280px;
+  }
+
+  .boardWorkspace .moveLogScroll {
+    max-height: none;
+    flex: 1;
+  }
+
+  .boardTools {
+    align-items: flex-start;
+  }
+
+  .boardTools > div {
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .boardFullscreen {
+    z-index: 1000 !important;
+  }
+
+  .boardFullscreen .boardTools > div > button:first-child {
+    position: fixed;
+    right: 12px;
+    bottom: 12px;
+    z-index: 1101;
+    box-shadow: 0 8px 28px #0009;
+  }
+}
+
+@media (min-width: 1000px) {
+  .boardFullscreen .boardTools > div > button:first-child {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1101;
+    box-shadow: 0 8px 28px #0009;
+  }
+
+  .boardFullscreen .evalAndBoard {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .boardFullscreen .evalAndBoard .boardWrap {
+    flex: 0 1 min(68vh, 820px);
+    width: auto;
+    max-width: min(68vh, 820px);
+  }
+
+  .boardFullscreen .evalAndBoard .moveLog {
+    flex: 0 1 280px;
+    width: 28%;
+    min-width: 190px;
+    max-width: 300px;
+  }
+}
