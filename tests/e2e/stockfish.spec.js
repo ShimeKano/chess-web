@@ -15,8 +15,8 @@ test('Stockfish loads in Chromium and finds a move from the initial position', a
   await expect(page.getByRole('heading', { name: /Chess Web/i })).toBeVisible();
   await page.getByRole('button', { name: /Phân tích vị trí/ }).first().click();
 
-  const result = page.locator('.controls span');
-  await expect(result).toContainText('Nước tốt nhất:', { timeout: 45000 });
+  const result = page.locator('.suggestionOutput');
+  await expect(result).toContainText(/\\([a-h][1-8][a-h][1-8][qrbn]?\\)/, { timeout: 45000 });
   await expect(page.locator('.error')).toHaveCount(0);
   expect(pageErrors, 'browser JavaScript errors').toEqual([]);
   expect(failedEngineRequests, 'failed Stockfish/WASM requests').toEqual([]);
